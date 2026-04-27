@@ -9,6 +9,7 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,13 +48,17 @@ public class DataImportService {
                         p.setSigla(sigla);
                         p.setNome(nome);
                         provinciaRepo.save(p);
-                        System.out.println("saved name ---------------" + nome);
                     }
                 }
             }
         }
     }
 
+    public String getSiglaById(Long id) {
+        return provinciaRepo.findById(id)
+                .map(Provincia::getSigla) // Extracts the sigla if the province is found
+                .orElseThrow(() -> new EntityNotFoundException("Province not found with id: " + id));
+    }
     // import comuni
     public void importComuni(InputStream inputStream) throws Exception {
         try (CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream))
@@ -70,14 +75,13 @@ public class DataImportService {
 
                 // avoid duplicates
                 if(comuneRepo.findByNome(nomeComune).isEmpty()){
-                   // System.out.println("----------------------if findbynome comune isEmpty------ " + nomeProvincia);
                     Optional<Provincia> prov = provinciaRepo.findByNomeIgnoreCase(nomeProvincia);
                     if(prov.isPresent()){
+                        String sigla = getSiglaById(prov.get().getId());
                         Comune c = new Comune();
                         c.setNome(nomeComune);
                         c.setProvincia(prov.get());
                         comuneRepo.save(c);
-                        System.out.println(" -------> " + nomeProvincia);
                     } else {
 
 

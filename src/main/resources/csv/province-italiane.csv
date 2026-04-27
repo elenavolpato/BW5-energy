@@ -2,7 +2,7 @@ province;sigla;regione
 Agrigento;AG;Sicilia
 Alessandria;AL;Piemonte
 Ancona;AN;Marche
-Aosta;AO;Valle d'Aosta
+Valle d'Aosta/Vallée d'Aoste;AO;Valle d'Aosta/Vallée d'Aoste
 Arezzo;AR;Toscana
 Ascoli Piceno;AP;Marche
 Asti;AT;Piemonte
@@ -14,7 +14,7 @@ Benevento;BN;Campania
 Bergamo;BG;Lombardia
 Biella;BI;Piemonte
 Bologna;BO;Emilia-Romagna
-Bolzano;BZ;Trentino-Alto Adige
+Bolzano/Bozen;BZ;Trentino-Alto Adige
 Brescia;BS;Lombardia
 Brindisi;BR;Puglia
 Cagliari;CA;Sardegna
@@ -56,7 +56,7 @@ Matera;MT;Basilicata
 Messina;ME;Sicilia
 Milano;MI;Lombardia
 Modena;MO;Emilia-Romagna
-Monza e Brianza;MB;Lombardia
+Monza e della Brianza;MB;Lombardia
 Napoli;NA;Campania
 Novara;NO;Piemonte
 Nuoro;NU;Sardegna
@@ -77,7 +77,7 @@ Prato;PO;Toscana
 Ragusa;RG;Sicilia
 Ravenna;RA;Emilia-Romagna
 Reggio Calabria;RC;Calabria
-Reggio Emilia;RE;Emilia-Romagna
+Reggio nell'Emilia;RE;Emilia-Romagna
 Rieti;RI;Lazio
 Rimini;RN;Emilia-Romagna
 Roma;RM;Lazio

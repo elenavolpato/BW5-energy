@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface ComuneRepository extends JpaRepository<Comune, Long> {
     List<Comune> findByNome(String nome);
-    List<Comune> findByProvinciaIgnoreCase(Provincia provincia);
+
 }
