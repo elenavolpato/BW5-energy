@@ -22,4 +22,11 @@ public class ErrorsHandler {
     public ErrorsListDTO handlePayloadValidationException(PayloadValidationException ex) {
         return new ErrorsListDTO(ex.getMessage(), LocalDateTime.now(), ex.getErrors());
     }
+
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDTO handleNotFoundException(NotFoundException ex) {
+        return new ErrorDTO(ex.getMessage(), LocalDateTime.now());
+    }
 }
