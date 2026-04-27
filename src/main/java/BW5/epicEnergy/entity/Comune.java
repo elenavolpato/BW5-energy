@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name="comuni")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,6 +20,6 @@ public class Comune {
     private String nome;
 
     @ManyToOne
-    @JoinColumn(name="povincia_id", nullable = false)
+    @JoinColumn(name="provincia", nullable = false)
     private Provincia provincia;
 }

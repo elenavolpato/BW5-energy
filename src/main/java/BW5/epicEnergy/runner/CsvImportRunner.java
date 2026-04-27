@@ -3,7 +3,6 @@ package BW5.epicEnergy.runner;
 import BW5.epicEnergy.service.DataImportService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import java.io.File;
 import java.io.InputStream;
 
 import org.springframework.core.io.ClassPathResource;
