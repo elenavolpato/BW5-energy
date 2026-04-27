@@ -18,7 +18,7 @@ public record ClienteDTO(
         @Email(message = "L'email deve rispettare un formato email valido")
         String email,
 
-        @PositiveOrZero(message = "Il fatturato annuale deve essere una numero positivo")
+        @PositiveOrZero(message = "Il fatturato annuale deve essere una numero positivo o uguale a zero")
         BigDecimal fatturatoAnnuale,
 
         @NotBlank(message = "La PEC è obbligatoria")
@@ -50,7 +50,7 @@ public record ClienteDTO(
         String sedeOperativa,
 
         @NotBlank(message = "Il tipo di cliente è obbligatorio")
-        @Pattern(regexp = "^(PA|SAS|SPA|SRL)$")
+        @Pattern(regexp = "^(PA|SAS|SPA|SRL)$", message = "Tipo di cliente non valido")
         String tipo
 ) {
 }

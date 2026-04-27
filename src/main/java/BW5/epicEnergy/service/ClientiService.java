@@ -4,6 +4,7 @@ import BW5.epicEnergy.DTO.ClienteDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.enums.TipoCliente;
 import BW5.epicEnergy.exception.BadRequestException;
+import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ClientiRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,5 +30,9 @@ public class ClientiService {
         Cliente clienteSalvato = this.clienteRepository.save(nuovoCliente);
         log.info("Cliente con id " + clienteSalvato.getId() + " salvato con successo!");
         return clienteSalvato.getId();
+    }
+
+    public Cliente findById(String clienteId) {
+        return this.clienteRepository.findById(UUID.fromString(clienteId)).orElseThrow(() -> new NotFoundException("customer"));
     }
 }
