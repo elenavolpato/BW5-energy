@@ -15,19 +15,25 @@ import java.util.UUID;
 @Setter
 @ToString
 public class Fattura {
-    @Column(nullable = false, unique = true)
-    static int numero;
+    static long totaleFatture;
+
     @Column(nullable = false)
     LocalDate data;
 
     @Column(nullable = false)
     BigDecimal importo;
+
+    @Column(nullable = false, unique = true)
+    long numero;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     Cliente cliente;
     //TODO:aggiungere relazione many to one con STATI_FATTURE
-    @Column(nullable = false)
-    String stato;
+    @ManyToOne
+    @JoinColumn(name = "id_stato", nullable = false)
+    StatoFattura stato;
+
     @Id
     @GeneratedValue
     private UUID id;
@@ -35,12 +41,12 @@ public class Fattura {
     protected Fattura() {
     }
 
-    //TODO:cambiare costruttore per stato con oggetto Stato
-    public Fattura(BigDecimal importo, Cliente cliente) {
+    public Fattura(BigDecimal importo, Cliente cliente, StatoFattura stato) {
         this.data = LocalDate.now();
         this.importo = importo;
+        this.numero = totaleFatture;
         this.cliente = cliente;
-        this.stato = "CARICATA";
-        numero++;
+        this.stato = stato;
+        totaleFatture++;
     }
 }
