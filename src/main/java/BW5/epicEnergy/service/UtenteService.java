@@ -1,4 +1,72 @@
 package BW5.epicEnergy.service;
 
+import BW5.epicEnergy.DTO.UtenteDTO;
+import BW5.epicEnergy.entity.Utente;
+import BW5.epicEnergy.exception.EmailAlreadyExistsException;
+import BW5.epicEnergy.exception.NotFoundException;
+import BW5.epicEnergy.repositories.UtenteRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
 public class UtenteService {
+
+    private final UtenteRepository utenteRepository;
+    private final PasswordEncoder bcrypt;
+
+    public UtenteService(UtenteRepository utenteRepository, PasswordEncoder bcrypt) {
+        this.utenteRepository = utenteRepository;
+        this.bcrypt = bcrypt;
+    }
+
+
+    public Utente save(UtenteDTO body) {
+
+        if (this.utenteRepository.existsByEmail((body.email())))
+            throw new EmailAlreadyExistsException("L'email" + body.email() + " con cui stai provando a registrarti è già associata ad un altro utente.");
+
+        Utente newU = this.utenteRepository.save(new Utente(body.username(), body.email(), body.password(), body.nome(), body.cognome()));
+
+        return newU;
+    }
+
+    public Utente findById(UUID utenteId) {
+        return this.utenteRepository.findById(utenteId).orElseThrow(() -> new NotFoundException("utente"));
+    }
+
+    public Page<Utente> findAll(int page, int size, String sortBy) {
+        if (size > 100) size = 10;
+        if (size < 0) size = 1;
+        if (page < 0) page = 0;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return this.utenteRepository.findAll(pageable);
+    }
+
+    public Utente update(UUID utenteId, UtenteDTO body) {
+        Utente toUpdate = this.findById(utenteId);
+
+        if (!toUpdate.getEmail().equals(body.email()))
+            throw new EmailAlreadyExistsException("L'email" + body.email() + " con cui stai provando a registrarti è già associata ad un altro utente.");
+
+        toUpdate.setUsername(body.username());
+        toUpdate.setEmail(body.email());
+        toUpdate.setPassword(bcrypt.encode(body.password()));
+        toUpdate.setNome(body.nome());
+        toUpdate.setCognome(body.cognome());
+
+        return toUpdate;
+    }
+
+    public void delete(Utente utente) {
+        this.utenteRepository.delete(utente);
+    }
+
+
 }
