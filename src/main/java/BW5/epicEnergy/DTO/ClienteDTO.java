@@ -46,7 +46,6 @@ public record ClienteDTO(
         @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Il numero di telefono del contatto deve rispettare un formato valido")
         String telefonoContatto,
 
-
         IndirizzoDTO sedeLegale,
         IndirizzoDTO sedeOperativa,
 
