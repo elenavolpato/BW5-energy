@@ -69,6 +69,8 @@ public class DataImportService {
         String[] fields;
         while ((fields = reader.readNext()) != null) {
             if(fields.length >= 4){
+                String codiceProv = fields[0];
+                String progressivoComune = fields[1];
                 String nomeComune = fields[2].trim();
                 String nomeProvincia =  fields[3].trim();
 
@@ -79,6 +81,8 @@ public class DataImportService {
                     if(prov.isPresent()){
                         String sigla = getSiglaById(prov.get().getId());
                         Comune c = new Comune();
+                        c.setCodiceProvincia(codiceProv);
+                        c.setProgressivoComune(progressivoComune);
                         c.setNome(nomeComune);
                         c.setProvincia(prov.get());
                         comuneRepo.save(c);

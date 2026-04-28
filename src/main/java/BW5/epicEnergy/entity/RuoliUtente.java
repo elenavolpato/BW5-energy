@@ -29,7 +29,7 @@ public class RuoliUtente {
     @Column(nullable = false)
     private Ruoli ruolo;
 
-    public RuoliUtente(Ruoli ruolo) {
-        this.ruolo = ruolo;
-    }
+//    public RuoliUtente(Ruoli ruolo) {
+//        this.ruolo = ruolo;
+//    }
 }
