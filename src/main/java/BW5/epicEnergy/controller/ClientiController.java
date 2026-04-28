@@ -1,9 +1,11 @@
 package BW5.epicEnergy.controller;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
+import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.ClientiService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -27,5 +29,13 @@ public class ClientiController {
             throw new PayloadValidationException(errors);
         }
         return this.clientiService.save(body);
+    }
+
+    @GetMapping
+    public Page<Cliente> ottieniClientiOrdinati(@RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size,
+                                                @RequestParam(defaultValue = "nome") String sortBy,
+                                                @RequestParam(defaultValue = "asc") String order) {
+        return this.clientiService.findAll(page, size, sortBy, order);
     }
 }
