@@ -68,8 +68,8 @@ public class UtenteService {
         return toUpdate;
     }
 
-    public void delete(Utente utente) {
-        this.utenteRepository.delete(utente);
+    public void delete(UUID utenteId) {
+        this.utenteRepository.delete(this.findById(utenteId));
     }
 
 

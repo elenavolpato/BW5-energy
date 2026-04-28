@@ -4,6 +4,7 @@ import BW5.epicEnergy.DTO.LoginDTO;
 import BW5.epicEnergy.DTO.LoginRespDTO;
 import BW5.epicEnergy.DTO.NewUtenteRespDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
+import BW5.epicEnergy.exception.ValidationExceptions;
 import BW5.epicEnergy.service.AuthService;
 import BW5.epicEnergy.service.UtenteService;
 import org.springframework.http.HttpStatus;
@@ -34,10 +35,13 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED) //201
     public NewUtenteRespDTO saveUtente(@RequestBody @Validated UtenteDTO body, BindingResult validationResult) {
+        
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getFieldErrors().stream().map(e -> e.getDefaultMessage()).toList();
-            throw new ValidationExceptions
+            throw new ValidationExceptions(errors);
         }
+
+        return new NewUtenteRespDTO(this.utenteService.save(body).getId());
     }
 
 
