@@ -24,5 +24,5 @@ public record IndirizzoDTO (
 
         @NotBlank
         @Positive
-        Long Comune
+        Long comune
 ){}

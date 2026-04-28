@@ -47,8 +47,8 @@ public record ClienteDTO(
         String telefonoContatto,
 
 
-        Indirizzo sedeLegale,
-        Indirizzo sedeOperativa,
+        IndirizzoDTO sedeLegale,
+        IndirizzoDTO sedeOperativa,
 
         @NotBlank(message = "Il tipo di cliente è obbligatorio")
         @Pattern(regexp = "^(PA|SAS|SPA|SRL)$", message = "Tipo di cliente non valido")

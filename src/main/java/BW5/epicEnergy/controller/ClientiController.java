@@ -21,6 +21,7 @@ public class ClientiController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UUID salvaNuovoCliente(@RequestBody @Validated ClienteDTO body, BindingResult validationResult) {
+
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
             throw new PayloadValidationException(errors);
