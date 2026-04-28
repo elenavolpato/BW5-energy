@@ -1,7 +1,6 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
-import BW5.epicEnergy.DTO.IndirizzoDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
 import BW5.epicEnergy.enums.TipoCliente;
@@ -23,19 +22,56 @@ public class ClientiService {
 
     public UUID save(ClienteDTO body) {
 
-       Indirizzo sedeL = indirizzoService.save(body.sedeLegale());
+       /*Indirizzo sedeL = indirizzoService.save(body.sedeLegale());
         System.out.println("-------------- " + sedeL);
        Indirizzo sedeO = indirizzoService.save(body.sedeOperativa());
-        System.out.println("-------------- " + sedeO);
-
+        System.out.println("-------------- " + sedeO);*/
 
         if (this.clienteRepository.existsByPartitaIva(body.partitaIva()))
             throw new BadRequestException("Partita IVA già associata ad un altro cliente");
-        Cliente nuovoCliente = new Cliente(
-                body.ragioneSociale(), body.partitaIva(), body.email(),
-                body.fatturatoAnnuale(), body.pec(), body.telefono(),
-                body.emailContatto(), body.nomeContatto(), body.cognomeContatto(), body.telefonoContatto(), sedeL, sedeO, TipoCliente.valueOf(body.tipo())
-        );
+
+        Indirizzo sedeLegale;
+        Indirizzo sedeOperativa;
+        Cliente nuovoCliente = null;
+        try {
+            sedeLegale = this.indirizzoService.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(
+                    body.sedeLegale().via(),
+                    body.sedeLegale().civico(),
+                    body.sedeLegale().localita(),
+                    body.sedeLegale().cap(),
+                    body.sedeLegale().comune());
+            if (this.clienteRepository.existsBySedeLegaleOrSedeOperativa(sedeLegale, sedeLegale))
+                throw new BadRequestException("Sede legale già associata ad un altro cliente");
+        } catch (NotFoundException ex) {
+            try {
+                sedeOperativa = this.indirizzoService.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(
+                        body.sedeOperativa().via(),
+                        body.sedeOperativa().civico(),
+                        body.sedeOperativa().localita(),
+                        body.sedeOperativa().cap(),
+                        body.sedeOperativa().comune());
+                if (this.clienteRepository.existsBySedeLegaleOrSedeOperativa(sedeOperativa, sedeOperativa))
+                    throw new BadRequestException("Sede operativa già associata ad un altro cliente");
+            } catch (NotFoundException e) {
+                sedeLegale = indirizzoService.save(body.sedeLegale());
+                try {
+                    sedeOperativa = indirizzoService.save(body.sedeOperativa());
+                    nuovoCliente = new Cliente(
+                            body.ragioneSociale(), body.partitaIva(), body.email(),
+                            body.fatturatoAnnuale(), body.pec(), body.telefono(),
+                            body.emailContatto(), body.nomeContatto(), body.cognomeContatto(), body.telefonoContatto(), sedeLegale, sedeOperativa, TipoCliente.valueOf(body.tipo())
+                    );
+
+                } catch (BadRequestException exception) {
+                    nuovoCliente = new Cliente(
+                            body.ragioneSociale(), body.partitaIva(), body.email(),
+                            body.fatturatoAnnuale(), body.pec(), body.telefono(),
+                            body.emailContatto(), body.nomeContatto(), body.cognomeContatto(), body.telefonoContatto(), sedeLegale, sedeLegale, TipoCliente.valueOf(body.tipo())
+                    );
+                }
+            }
+        }
+        assert nuovoCliente != null;
         Cliente clienteSalvato = this.clienteRepository.save(nuovoCliente);
         log.info("Cliente con id " + clienteSalvato.getId() + " salvato con successo!");
         return clienteSalvato.getId();
