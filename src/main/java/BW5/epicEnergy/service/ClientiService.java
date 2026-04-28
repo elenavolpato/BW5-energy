@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -43,5 +45,36 @@ public class ClientiService {
 
     public Cliente findById(String clienteId) {
         return this.clienteRepository.findById(UUID.fromString(clienteId)).orElseThrow(() -> new NotFoundException("customer"));
+    }
+
+    //aggiungo operazioni CRUD
+    public List<Cliente> findAll() {
+        return this.clienteRepository.findAll();
+    }
+
+    public Cliente findById(UUID id) {
+        return this.clienteRepository.findById(id).orElseThrow(() -> new NotFoundException("customer"));
+    }
+
+    public Cliente update(UUID id, ClienteDTO body) {
+        Cliente cliente = this.findById(id);
+        cliente.setRagioneSociale(body.ragioneSociale());
+        cliente.setPartitaIva(body.partitaIva());
+        cliente.setEmail(body.email());
+        cliente.setFatturatoAnnuale(body.fatturatoAnnuale());
+        cliente.setPec(body.pec());
+        cliente.setTelefono(body.telefono());
+        cliente.setEmailContatto(body.emailContatto());
+        cliente.setNomeContatto(body.nomeContatto());
+        cliente.setCognomeContatto(body.cognomeContatto());
+        cliente.setTelefonoContatto(body.telefonoContatto());
+        cliente.setDataUltimoContatto(LocalDate.now());
+        cliente.setTipo(TipoCliente.valueOf(body.tipo()));
+        return this.clienteRepository.save(cliente);
+    }
+
+    public void delete(UUID id) {
+        Cliente cliente = this.findById(id);
+        clienteRepository.deleteById(id);
     }
 }

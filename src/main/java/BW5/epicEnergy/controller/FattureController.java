@@ -2,6 +2,7 @@ package BW5.epicEnergy.controller;
 
 import BW5.epicEnergy.DTO.FatturaDTO;
 import BW5.epicEnergy.DTO.StatoFatturaDTO;
+import BW5.epicEnergy.entity.Fattura;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.FattureService;
 import BW5.epicEnergy.service.StatoFatturaService;
@@ -39,5 +40,31 @@ public class FattureController {
             throw new PayloadValidationException(errors);
         }
         return this.statoFatturaService.save(body);
+    }
+
+    //Salve capo-gruppo, ho aggiunto queste operazioni.
+    @GetMapping
+    public List<Fattura> findAll() {
+        return this.fattureService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Fattura findById(@PathVariable UUID id) {
+        return this.fattureService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Fattura updateFattura(@PathVariable UUID id, @RequestBody @Validated FatturaDTO body, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
+            throw new PayloadValidationException(errors);
+        }
+        return this.fattureService.updateFattura(id, body);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFattura(@PathVariable UUID id) {
+        this.fattureService.deleteById(id);
     }
 }
