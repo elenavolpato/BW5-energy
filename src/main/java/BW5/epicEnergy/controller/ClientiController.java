@@ -4,7 +4,7 @@ import BW5.epicEnergy.DTO.ClienteDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.ClientiService;
-import BW5.epicEnergy.specifications2.ClienteSpecification;
+import BW5.epicEnergy.specifications.ClienteSpecification;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
