@@ -5,7 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -15,7 +21,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "utenti")
-public class Utente {
+public class Utente implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -39,6 +45,9 @@ public class Utente {
     @Column(name = "avatar_url", nullable = false)
     private String avatarURL;
 
+    @OneToMany(mappedBy = "utente", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<RuoliUtente> ruoli = new ArrayList<>();
+
     public Utente(String username, String email, String password, String nome, String cognome) {
         this.username = username;
         this.email = email;
@@ -48,5 +57,9 @@ public class Utente {
         this.avatarURL = "https://ui-avatars.com/api?name=" + nome + "+" + cognome;
     }
 
-    
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.ruoli.stream().map(r -> new SimpleGrantedAuthority(r.getRuolo().name())).toList();
+    }
 }
