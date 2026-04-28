@@ -23,6 +23,11 @@ public class ErrorsHandler {
         return new ErrorsListDTO(ex.getMessage(), LocalDateTime.now(), ex.getErrors());
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        return new ErrorDTO(ex.getMessage(), LocalDateTime.now());
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
