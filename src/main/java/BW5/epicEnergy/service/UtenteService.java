@@ -40,6 +40,10 @@ public class UtenteService {
         return this.utenteRepository.findById(utenteId).orElseThrow(() -> new NotFoundException("utente"));
     }
 
+    public Utente findByEmail(String email) {
+        return this.utenteRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Utente"));
+    }
+
     public Page<Utente> findAll(int page, int size, String sortBy) {
         if (size > 100) size = 10;
         if (size < 0) size = 1;
