@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 public class IndirizzoService {
     private final ComuneRepository comuneRepository;
-    //private  final ProvinciaRepository provinciaRepository;
     private final IndirizzoRepository indirizzoRepository;
 
     public Comune findByComuneId(Long id) {
@@ -43,10 +42,6 @@ public class IndirizzoService {
 
         return indirizzoRepository.save(nuovoIndirizzo);
     }
-
-    /*public Optional<Indirizzo> findByViaAndCivicoAndLocalitaAndCapAndComune_Id(String via, String civico, String localita, String cap, Long comuneId) {
-        return this.indirizzoRepository.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(via, civico, localita, cap, comuneId);
-    }*/
 
     public Indirizzo findByViaAndCivicoAndLocalitaAndCapAndComune_Id(String via, String civico, String localita, String cap, Long comuneId) {
         return this.indirizzoRepository.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(via, civico, localita, cap, comuneId).orElseThrow(() -> new NotFoundException("address"));
