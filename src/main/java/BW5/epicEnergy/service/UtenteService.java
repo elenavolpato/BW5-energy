@@ -38,6 +38,9 @@ public class UtenteService {
 
         Utente newU = this.utenteRepository.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()), body.nome(), body.cognome()));
 
+        // qia assegno di default il ruolo di UTENTE
+        newU.addRuolo("utente");
+
         return newU;
     }
 
