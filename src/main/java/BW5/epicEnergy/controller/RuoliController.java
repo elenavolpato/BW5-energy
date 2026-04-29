@@ -18,8 +18,6 @@ import java.util.List;
 public class RuoliController {
 
     private final RuoliService ruoliService;
-
-
     public RuoliController(RuoliService ruoliService) {
         this.ruoliService = ruoliService;
     }
