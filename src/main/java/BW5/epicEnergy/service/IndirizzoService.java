@@ -69,7 +69,8 @@ public class IndirizzoService {
         existing.setLocalita(details.getLocalita());
 
         if (details.getComune() != null) {
-            existing.setComune(details.getComune());
+            Comune foundComune = comuneRepository.findComuneById(details.getComune().getId());
+            existing.setComune(foundComune);
         }
 
         return indirizzoRepository.save(existing);
