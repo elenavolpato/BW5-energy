@@ -36,10 +36,10 @@ public class ClientiController {
         return this.clientiService.save(body);
     }
 
-    @GetMapping
-    public List<Cliente> findAll() {
-        return this.clientiService.findAll();
-    }
+//    @GetMapping
+//    public List<Cliente> findAll() {
+//        return this.clientiService.findAll();
+//    }
 
     @PutMapping("/{id}")
     public Cliente aggiornaCliente(@PathVariable UUID id, @RequestBody @Validated ClienteDTO body, BindingResult validationResult) {

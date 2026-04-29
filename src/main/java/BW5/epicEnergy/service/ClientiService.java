@@ -36,10 +36,10 @@ public class ClientiService {
 
     public UUID save(ClienteDTO body) {
 
-       Indirizzo sedeL = indirizzoService.save(body.sedeLegale());
-        System.out.println("-------------- " + sedeL);
-       Indirizzo sedeO = indirizzoService.save(body.sedeOperativa());
-        System.out.println("-------------- " + sedeO);
+//       Indirizzo sedeL = indirizzoService.save(body.sedeLegale());
+//        System.out.println("-------------- " + sedeL);
+//       Indirizzo sedeO = indirizzoService.save(body.sedeOperativa());
+//        System.out.println("-------------- " + sedeO);
 
 
         if (this.clienteRepository.existsByPartitaIva(body.partitaIva()))
