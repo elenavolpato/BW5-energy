@@ -18,7 +18,7 @@ public class StatoFatturaService {
     private final StatoFatturaRepository statoFatturaRepository;
 
     public UUID save(StatoFatturaDTO body) {
-        if (statoFatturaRepository.existsByTipo(body.tipo()))
+        if (statoFatturaRepository.existsByTipo(body.tipo().toUpperCase().trim()))
             throw new BadRequestException("Tipo di stato già presente nel database");
         StatoFattura nuovoStatoFattura = new StatoFattura(body.tipo().toUpperCase().trim());
         StatoFattura statoFatturaSalvato = this.statoFatturaRepository.save(nuovoStatoFattura);
