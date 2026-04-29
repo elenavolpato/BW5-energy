@@ -2,6 +2,7 @@ package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
+import BW5.epicEnergy.entity.Ruoli;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.exception.EmailAlreadyExistsException;
 import BW5.epicEnergy.exception.NotFoundException;
@@ -36,6 +37,9 @@ public class UtenteService {
             throw new EmailAlreadyExistsException("L'email" + body.email() + " con cui stai provando a registrarti è già associata ad un altro utente.");
 
         Utente newU = this.utenteRepository.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()), body.nome(), body.cognome()));
+
+        // qia assegno di default il ruolo di UTENTE
+        newU.addRuolo(Ruoli.UTENTE);
 
         return newU;
     }

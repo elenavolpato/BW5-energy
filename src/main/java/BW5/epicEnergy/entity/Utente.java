@@ -57,6 +57,16 @@ public class Utente implements UserDetails {
         this.avatarURL = "https://ui-avatars.com/api?name=" + nome + "+" + cognome;
     }
 
+    // metodo per aggiungere un ruolo all'utente, si richiama dal service
+    public void addRuolo(Ruoli ruolo) {
+        boolean exist = this.ruoli.stream().anyMatch(r -> r.getRuolo() == ruolo);
+        if (!exist) {
+            RuoliUtente nuovoRuolo = new RuoliUtente();
+            nuovoRuolo.setRuolo(ruolo);
+            nuovoRuolo.setUtente(this);
+            this.ruoli.add(nuovoRuolo);
+        }
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
