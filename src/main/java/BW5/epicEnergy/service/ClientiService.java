@@ -1,12 +1,14 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
+import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
 import BW5.epicEnergy.enums.TipoCliente;
 import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ClientiRepository;
+import BW5.epicEnergy.tools.EmailSender;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class ClientiService {
     private final ClientiRepository clienteRepository;
     private final IndirizzoService indirizzoService;
+    private final EmailSender emailSender;
 
     public UUID save(ClienteDTO body) {
 
@@ -86,28 +89,6 @@ public class ClientiService {
         return this.clienteRepository.findById(UUID.fromString(clienteId)).orElseThrow(() -> new NotFoundException("customer"));
     }
 
-    /*public Page<Cliente> findAll(int page, int size, String sortBy, String order) {
-        if (page < 0) page = 0;
-        if (size < 0 || size > 100) size = 10;
-
-        String criterioOrdine = switch (sortBy) {
-            case "nome" -> "ragioneSociale";
-            case "fatturato" -> "fatturatoAnnuale";
-            case "inserimento" -> "dataInserimento";
-            case "ultimoContatto" -> "dataUltimoContatto";
-            case "sedeLegale" -> "sedeLegale.comune.provincia.nome";
-            default -> throw new BadRequestException("Criterio di ordinamento non valido");
-        };
-
-        Pageable pageable = switch (order) {
-            case "asc" -> PageRequest.of(page, size, Sort.by(criterioOrdine));
-            case "disc" -> PageRequest.of(page, size, Sort.by(criterioOrdine).reverse());
-            default -> throw new BadRequestException("Criterio di ordinamento non valido");
-        };
-
-        return this.clienteRepository.findAll(pageable);
-    }*/
-
     public Page<Cliente> findAll(Specification<Cliente> specification, int page, int size, String sortBy, String order) {
         if (page < 0) page = 0;
         if (size < 0 || size > 100) size = 10;
@@ -128,5 +109,15 @@ public class ClientiService {
         };
 
         return this.clienteRepository.findAll(specification, pageable);
+    }
+
+    public String inviaEmailACliente(String clienteId, EmailDTO body) {
+        Cliente cliente = this.findById(clienteId);
+        return this.emailSender.sendEmailToCustomer(cliente, body);
+    }
+
+    public String inviaEmailAContattoCliente(String clienteId, EmailDTO body) {
+        Cliente cliente = this.findById(clienteId);
+        return this.emailSender.sendEmailToCustomerReferent(cliente, body);
     }
 }
