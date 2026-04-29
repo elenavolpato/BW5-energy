@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,5 +50,11 @@ public class ClientiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCliente(@PathVariable UUID id) {
         this.clientiService.delete(id);
+    }
+
+    @PatchMapping("/{id}/logo")
+    public Cliente avatarUpload(@PathVariable UUID id,
+                              @RequestParam("logo") MultipartFile file) throws IOException {
+        return this.clientiService.avatarUpload(id, file);
     }
 }

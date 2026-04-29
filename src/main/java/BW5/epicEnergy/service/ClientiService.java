@@ -8,12 +8,17 @@ import BW5.epicEnergy.enums.TipoCliente;
 import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ClientiRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -22,6 +27,7 @@ import java.util.UUID;
 public class ClientiService {
     private final ClientiRepository clienteRepository;
     private final IndirizzoService indirizzoService;
+    private final Cloudinary cloudinary;
 
     public UUID save(ClienteDTO body) {
 
@@ -76,5 +82,19 @@ public class ClientiService {
     public void delete(UUID id) {
         Cliente cliente = this.findById(id);
         clienteRepository.deleteById(id);
+    }
+
+    public Cliente avatarUpload (UUID id, MultipartFile file) {
+        Cliente cliente = this.findById(id);
+        Map uploadResult;
+        try {
+            uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("public_id", "clienti/" + id));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String url = (String) uploadResult.get("secure_url");
+        cliente.setLogoAziendale(url);
+        return this.clienteRepository.save(cliente);
     }
 }
