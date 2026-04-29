@@ -1,6 +1,7 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
+import BW5.epicEnergy.DTO.IndirizzoDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
 import BW5.epicEnergy.enums.TipoCliente;
@@ -27,10 +28,11 @@ public class ClientiService {
 
     public UUID save(ClienteDTO body) {
 
-       /*Indirizzo sedeL = indirizzoService.save(body.sedeLegale());
+       Indirizzo sedeL = indirizzoService.save(body.sedeLegale());
         System.out.println("-------------- " + sedeL);
        Indirizzo sedeO = indirizzoService.save(body.sedeOperativa());
-        System.out.println("-------------- " + sedeO);*/
+        System.out.println("-------------- " + sedeO);
+
 
         if (this.clienteRepository.existsByPartitaIva(body.partitaIva()))
             throw new BadRequestException("Partita IVA già associata ad un altro cliente");

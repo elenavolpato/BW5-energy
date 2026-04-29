@@ -1,6 +1,7 @@
 package BW5.epicEnergy.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Indirizzo {
+
+public class Indirizzo{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
