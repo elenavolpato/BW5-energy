@@ -89,4 +89,10 @@ public class ClientiController {
     public String inviaEmailAContattoCliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
         return this.clientiService.inviaEmailAContattoCliente(clienteId, body);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCliente(@PathVariable UUID id) {
+        clientiService.deleteCliente(id);
+    }
 }
