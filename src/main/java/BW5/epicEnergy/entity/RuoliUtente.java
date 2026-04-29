@@ -25,8 +25,8 @@ public class RuoliUtente {
     @JoinColumn(name = "utente_id", nullable = false)
     private Utente utente;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @OneToOne
+    @JoinColumn(name = "ruolo_id", nullable = false)
     private Ruoli ruolo;
 
 //    public RuoliUtente(Ruoli ruolo) {
