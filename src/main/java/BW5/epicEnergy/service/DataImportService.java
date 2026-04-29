@@ -68,6 +68,7 @@ public class DataImportService {
                 .build()){
 
         String[] fields;
+        int missingProgressivoCounter = 1;
         while ((fields = reader.readNext()) != null) {
             if(fields.length >= 4){
                 String codiceProv = fields[0];
@@ -93,6 +94,11 @@ public class DataImportService {
                     case "Vibo Valentia" -> "Vibo-Valentia";
                     default -> nomeProvinciaRaw;
                 };
+
+                if (progressivoComune.equals("#RIF!")) {
+                    progressivoComune = String.format("%01d", missingProgressivoCounter);
+                    missingProgressivoCounter++; // Incrementa per il prossimo caso
+                }
                 String nomeProvinciaNorm = DataUtils.normalize(translatedProv);
 
 
@@ -108,7 +114,7 @@ public class DataImportService {
 
                     } else {
                         System.out.println("MISSING PROVINCE IN DB: " + nomeProvinciaNorm + " (from CSV: " + nomeProvinciaRaw + ")");
-                    }
+                        }
                     }
                 }
             }
