@@ -20,7 +20,8 @@ public class ClienteSpecification {
             LocalDate dataUltimoContattoDopoDi,
             LocalDate dataUltimoContattoPrimaDi,
             LocalDate dataUltimoContatto,
-            String nome
+            String nome,
+            String parteNome
     ) {
         return (root, query, cb) -> {
 
@@ -63,9 +64,13 @@ public class ClienteSpecification {
             }
 
             if (nome != null && !nome.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("ragioneSociale")), nome.toLowerCase()));
+            }
+
+            if (parteNome != null && !parteNome.isEmpty()) {
                 predicates.add(cb.like(
                         cb.lower(root.get("ragioneSociale")),
-                        "%" + nome.toLowerCase() + "%"
+                        "%" + parteNome.toLowerCase() + "%"
                 ));
             }
 

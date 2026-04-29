@@ -54,6 +54,7 @@ public class ClientiController {
                                                          @RequestParam(required = false) LocalDate dataUltimoContattoPrimaDi,
                                                          @RequestParam(required = false) LocalDate dataUltimoContatto,
                                                          @RequestParam(required = false) String nome,
+                                                         @RequestParam(required = false) String parteNome,
                                                          @RequestParam(defaultValue = "0") int page,
                                                          @RequestParam(defaultValue = "10") int size,
                                                          @RequestParam(defaultValue = "nome") String sortBy,
@@ -69,7 +70,8 @@ public class ClientiController {
                 dataUltimoContattoDopoDi,
                 dataUltimoContattoPrimaDi,
                 dataUltimoContatto,
-                nome
+                nome,
+                parteNome
         );
 
         return this.clientiService.findAll(specification, page, size, sortBy, order);

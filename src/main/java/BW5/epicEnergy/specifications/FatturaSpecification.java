@@ -35,7 +35,7 @@ public class FatturaSpecification {
             }
 
             if (nomeCliente != null && !nomeCliente.isEmpty()) {
-                predicates.add(cb.equal(root.get("cliente").get("ragioneSociale"), nomeCliente));
+                predicates.add(cb.like(cb.lower(root.get("cliente").get("ragioneSociale")), nomeCliente.toLowerCase()));
             }
 
             if (parteNomeCliente != null && !parteNomeCliente.isEmpty()) {
