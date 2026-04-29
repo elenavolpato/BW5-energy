@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface RuoliUtenteRepository extends JpaRepository<RuoliUtente, UUID> {
+    boolean existsByRuolo_IdAndUtente_Id(UUID idRuolo, UUID idUtente);
 }

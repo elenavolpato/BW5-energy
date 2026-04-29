@@ -1,5 +1,7 @@
 package BW5.epicEnergy.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "utenti")
+@JsonIgnoreProperties({"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled"})
 public class Utente implements UserDetails {
 
     @Id
@@ -34,6 +37,7 @@ public class Utente implements UserDetails {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
@@ -45,8 +49,11 @@ public class Utente implements UserDetails {
     @Column(name = "avatar_url", nullable = false)
     private String avatarURL;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "utente", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RuoliUtente> ruoli = new ArrayList<>();
+    /*@OneToMany(mappedBy = "utente")
+    private List<RuoliUtente> ruoli = new ArrayList<>();*/
 
     public Utente(String username, String email, String password, String nome, String cognome) {
         this.username = username;
@@ -58,7 +65,7 @@ public class Utente implements UserDetails {
     }
 
     // metodo per aggiungere un ruolo all'utente, si richiama dal service
-    public void addRuolo(String ruolo) {
+    /*public void addRuolo(String ruolo) {
         boolean exist = this.ruoli.stream().anyMatch(r -> r.getRuolo().equals(ruolo.trim().toUpperCase()));
         if (!exist) {
             RuoliUtente nuovoRuolo = new RuoliUtente();
@@ -67,10 +74,11 @@ public class Utente implements UserDetails {
             nuovoRuolo.setUtente(this);
             this.ruoli.add(nuovoRuolo);
         }
-    }
+    }*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.ruoli.stream().map(r -> new SimpleGrantedAuthority(r.getRuolo().toString())).toList();
+        return this.ruoli.stream().map(r -> new SimpleGrantedAuthority(r.getRuolo().getRuolo())).toList();
     }
+
 }
