@@ -1,6 +1,7 @@
 package BW5.epicEnergy.DTO;
 
 
+import BW5.epicEnergy.entity.Indirizzo;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -45,9 +46,8 @@ public record ClienteDTO(
         @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Il numero di telefono del contatto deve rispettare un formato valido")
         String telefonoContatto,
 
-        //TODO: capire come gestire validazione DTO (passare qui indirizzoDTO?)
-        String sedeLegale,
-        String sedeOperativa,
+        IndirizzoDTO sedeLegale,
+        IndirizzoDTO sedeOperativa,
 
         @NotBlank(message = "Il tipo di cliente è obbligatorio")
         @Pattern(regexp = "^(PA|SAS|SPA|SRL)$", message = "Tipo di cliente non valido")

@@ -59,13 +59,13 @@ public class Cliente {
     @Column(name = "logo_aziendale", nullable = false)
     private String logoAziendale;
 
-    //TODO:one to one con indirizzi
-    @Column(name = "sede_legale_id", nullable = false)
-    private String sedeLegale;
+    @OneToOne
+    @JoinColumn(name = "sede_legale_id", nullable = false)
+    private Indirizzo sedeLegale;
 
-    //TODO: one to one con indirizzi
-    @Column(name = "sede_operativa_id", nullable = false)
-    private String sedeOperativa;
+    @OneToOne
+    @JoinColumn(name = "sede_operativa_id", nullable = false)
+    private Indirizzo sedeOperativa;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -74,10 +74,9 @@ public class Cliente {
     protected Cliente() {
     }
 
-    //TODO: passare oggetto INDIRIZZO invece che stringa
     public Cliente(String ragioneSociale, String partitaIva, String email, BigDecimal fatturatoAnnuale, String pec, String telefono,
                    String emailContatto, String nomeContatto, String cognomeContatto, String telefonoContatto,
-                   String sedeLegale, String sedeOperativa, TipoCliente tipo) {
+                   Indirizzo sedeLegale, Indirizzo sedeOperativa, TipoCliente tipo) {
         this.ragioneSociale = ragioneSociale;
         this.partitaIva = partitaIva;
         this.email = email;

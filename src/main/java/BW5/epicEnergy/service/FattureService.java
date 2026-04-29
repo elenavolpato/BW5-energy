@@ -4,9 +4,15 @@ import BW5.epicEnergy.DTO.FatturaDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Fattura;
 import BW5.epicEnergy.entity.StatoFattura;
+import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.repositories.FattureRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -26,5 +32,28 @@ public class FattureService {
         Fattura fatturaSalvata = this.fattureRepository.save(nuovaFattura);
         log.info("Fattura con id " + fatturaSalvata.getId() + " salvata con successo!");
         return fatturaSalvata.getId();
+    }
+
+    public Page<Fattura> findAll(Specification<Fattura> specification, int page, int size, String sortBy, String order) {
+        if (page < 0) page = 0;
+        if (size < 0 || size > 100) size = 10;
+
+        String criterioOrdine = switch (sortBy) {
+            case "data" -> "data";
+            case "importo" -> "importo";
+            case "numero" -> "numero";
+            /*case "idCliente" -> "cliente";
+            case "nomeCliente" -> "cliente.ragioneSociale";
+            case "partitaIvaCliente" -> "cliente.partitaIva";*/
+            default -> throw new BadRequestException("Criterio di ordinamento non valido");
+        };
+
+        Pageable pageable = switch (order) {
+            case "asc" -> PageRequest.of(page, size, Sort.by(criterioOrdine));
+            case "disc" -> PageRequest.of(page, size, Sort.by(criterioOrdine).reverse());
+            default -> throw new BadRequestException("Criterio di ordinamento non valido");
+        };
+
+        return this.fattureRepository.findAll(specification, pageable);
     }
 }

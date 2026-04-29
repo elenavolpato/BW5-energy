@@ -1,23 +1,27 @@
 package BW5.epicEnergy.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name="comuni")
+@Table(name = "comuni")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Comune {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;
+
+    @Column(name = "codice_province")
+    private String codiceProvincia;
+
+    @Column(name = "progressivo_comuni")
+    private String progressivoComune;
 
     @ManyToOne
     @JoinColumn(name = "provincia_sigla", referencedColumnName = "sigla")

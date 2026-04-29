@@ -9,10 +9,10 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
+@Table(name = "indirizzi")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 
 public class Indirizzo{
     @Id
@@ -28,4 +28,11 @@ public class Indirizzo{
     @JoinColumn(name = "comune_id", nullable = false)
     private Comune comune;
 
+    public Indirizzo(String via, String civico, String localita, String cap, Comune comune) {
+        this.via = via;
+        this.civico = civico;
+        this.localita = localita;
+        this.cap = cap;
+        this.comune = comune;
+    }
 }
