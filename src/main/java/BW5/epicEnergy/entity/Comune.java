@@ -12,7 +12,7 @@ import lombok.*;
 @ToString
 public class Comune {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;

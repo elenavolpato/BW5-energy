@@ -40,8 +40,8 @@ public class DataImportService {
             while ((fields = reader.readNext()) != null) {
                 // check if line is empty
                 if(fields.length >= 2) {
-                    String sigla =  DataUtils.normalize(fields[1]);
-                    String nome =  DataUtils.normalize(fields[0]);
+                    String sigla =  DataUtils.normalize(fields[0]);
+                    String nome =  DataUtils.normalize(fields[1]);
                     // handle duplicates
                     if (provinciaRepo.findBySigla(sigla).isEmpty()) {
                         Provincia p = new Provincia();
@@ -61,6 +61,7 @@ public class DataImportService {
     }
     // import comuni
     public void importComuni(InputStream inputStream) throws Exception {
+        System.out.println("COMUNE IMPORT INIZIATO ------------------");
         try (CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream))
                 .withCSVParser(parser)
                 .withSkipLines(1)
@@ -72,25 +73,42 @@ public class DataImportService {
                 String codiceProv = fields[0];
                 String progressivoComune = fields[1];
                 String nomeComune = fields[2].trim();
-                String nomeProvincia =  fields[3].trim();
+                String nomeProvinciaRaw =  fields[3].trim();
+
+                nomeProvinciaRaw = nomeProvinciaRaw.replace("\u00a0", " ").trim();
+
+                // fix mismatchs
+                String translatedProv = switch (nomeProvinciaRaw) {
+                    case "Sud Sardegna", "Sardegna" -> "Medio Campidano";
+                    case "Valle d'Aosta/Vallée d'Aoste" -> "Aosta";
+                    case "Monza e della Brianza" -> "Monza-Brianza";
+                    case "Ascoli Piceno" -> "Ascoli-Piceno";
+                    case "Pesaro e Urbino" -> "Pesaro-Urbino";
+                    case "La Spezia" -> "La-Spezia";
+                    case "Reggio Calabria" -> "Reggio-Calabria";
+                    case "Reggio nell'Emilia" -> "Reggio-Emilia";
+                    case "Bolzano/Bozen" -> "Bolzano";
+                    case "Verbano-Cusio-Ossola" -> "Verbania";
+                    case "Forlì-Cesena" -> "Forli-Cesena";
+                    case "Vibo Valentia" -> "Vibo-Valentia";
+                    default -> nomeProvinciaRaw;
+                };
+                String nomeProvinciaNorm = DataUtils.normalize(translatedProv);
 
 
-                // avoid duplicates
                 if(comuneRepo.findByNome(nomeComune).isEmpty()){
-                    Optional<Provincia> prov = provinciaRepo.findByNomeIgnoreCase(nomeProvincia);
+                    Optional<Provincia> prov = provinciaRepo.findByNomeIgnoreCase(nomeProvinciaNorm); // avoid duplicates
                     if(prov.isPresent()){
-                        String sigla = getSiglaById(prov.get().getId());
                         Comune c = new Comune();
                         c.setCodiceProvincia(codiceProv);
                         c.setProgressivoComune(progressivoComune);
                         c.setNome(nomeComune);
                         c.setProvincia(prov.get());
                         comuneRepo.save(c);
+
                     } else {
-
-
-                       // System.out.println("Could not find province: " + nomeProvincia);
-                        }
+                        System.out.println("MISSING PROVINCE IN DB: " + nomeProvinciaNorm + " (from CSV: " + nomeProvinciaRaw + ")");
+                    }
                     }
                 }
             }

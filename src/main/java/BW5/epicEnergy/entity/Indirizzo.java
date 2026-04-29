@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@Table(name="indirizzi")
 public class Indirizzo{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
