@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class FattureController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UUID salvaNuovaFattura(@RequestBody @Validated FatturaDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
@@ -39,6 +41,7 @@ public class FattureController {
 
     @PostMapping("/stati")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UUID salvaNuovoStatoFattura(@RequestBody @Validated StatoFatturaDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
@@ -48,6 +51,7 @@ public class FattureController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Page<Fattura> ottieniFattureOrdinateEFiltrate(@RequestParam(required = false) UUID idCliente,
                                                          @RequestParam(required = false) String nomeCliente,
                                                          @RequestParam(required = false) String parteNomeCliente,

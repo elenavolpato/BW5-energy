@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class ClientiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public UUID salvaNuovoCliente(@RequestBody @Validated ClienteDTO body, BindingResult validationResult) {
 
         if (validationResult.hasErrors()) {
@@ -39,12 +41,8 @@ public class ClientiController {
         return this.clientiService.save(body);
     }
 
-//    @GetMapping
-//    public List<Cliente> findAll() {
-//        return this.clientiService.findAll();
-//    }
-
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public Cliente aggiornaCliente(@PathVariable UUID id, @RequestBody @Validated ClienteDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
@@ -54,26 +52,21 @@ public class ClientiController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCliente(@PathVariable UUID id) {
         this.clientiService.deleteCliente(id);
     }
 
     @PatchMapping("/{id}/logo")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public Cliente avatarUpload(@PathVariable UUID id,
                                 @RequestParam("logo") MultipartFile file) throws IOException {
         return this.clientiService.avatarUpload(id, file);
     }
 
-    /*@GetMapping
-    public Page<Cliente> ottieniClientiOrdinati(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size,
-                                                @RequestParam(defaultValue = "nome") String sortBy,
-                                                @RequestParam(defaultValue = "asc") String order) {
-        return this.clientiService.findAll(page, size, sortBy, order);
-    }*/
-
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Page<Cliente> ottieniClientiOrdinatiEFiltrati(@RequestParam(required = false) BigDecimal fatturatoMin,
                                                          @RequestParam(required = false) BigDecimal fatturatoMax,
                                                          @RequestParam(required = false) BigDecimal fatturato,
@@ -108,16 +101,17 @@ public class ClientiController {
     }
 
     @PostMapping("/{clienteId}/invioEmail")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public InvioEmailDTO inviaEmailACliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
         return this.clientiService.inviaEmailACliente(clienteId, body);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("/{clienteId}/referente/invioEmail")
     @ResponseStatus(HttpStatus.CREATED)
     public InvioEmailDTO inviaEmailAContattoCliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
         return this.clientiService.inviaEmailAContattoCliente(clienteId, body);
     }
-
 
 }

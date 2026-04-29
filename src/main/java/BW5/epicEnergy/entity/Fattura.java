@@ -29,7 +29,7 @@ public class Fattura {
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     Cliente cliente;
-    //TODO:aggiungere relazione many to one con STATI_FATTURE
+
     @ManyToOne
     @JoinColumn(name = "id_stato", nullable = false)
     StatoFattura stato;

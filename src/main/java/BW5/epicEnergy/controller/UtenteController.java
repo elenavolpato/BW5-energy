@@ -1,8 +1,10 @@
 package BW5.epicEnergy.controller;
 
+import BW5.epicEnergy.DTO.AssegnazioneRuoloUtenteDTO;
 import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
+import BW5.epicEnergy.entity.RuoliUtente;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.service.ClientiService;
 import BW5.epicEnergy.service.UtenteService;
@@ -34,24 +36,27 @@ public class UtenteController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Utente getOwnProfile(@AuthenticationPrincipal Utente currentAuthenticatedUser) {
         System.out.println(currentAuthenticatedUser.getNome());
         return currentAuthenticatedUser;
     }
 
     @PutMapping("/me")
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Utente updateOwnProfile(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody UtenteDTO body) {
         return this.utenteService.update(currentAuthenticatedUser.getId(), body);
     }
 
     @DeleteMapping("/me")
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOwnProfile(@AuthenticationPrincipal Utente currentAuthenticatedUser) {
         this.utenteService.delete(currentAuthenticatedUser.getId());
     }
 
     @GetMapping("/{utenteId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public Utente getById(@PathVariable UUID utenteId) {
         return this.utenteService.findById(utenteId);
     }
@@ -71,8 +76,23 @@ public class UtenteController {
 
     @PostMapping("/invioEmail")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public InvioEmailDTO inviaEmail(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody @Validated EmailDTO body) {
-        System.out.println(currentAuthenticatedUser.getNome());
         return this.utenteService.inviaEmail(currentAuthenticatedUser, body);
     }
+
+    @PostMapping("/{utenteId}/autorizzazioni")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public RuoliUtente assegnaNuovoRuolo(@PathVariable UUID utenteId, @RequestBody @Validated AssegnazioneRuoloUtenteDTO body) {
+        return this.utenteService.assegnaRuoloAUtente(utenteId, body);
+    }
+
+    @DeleteMapping("/{utenteId}/autorizzazioni/{ruolo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public void eliminaRuoloUtente(@PathVariable UUID utenteId, @PathVariable String ruolo) {
+        this.utenteService.eliminaRuoloAUtente(utenteId, ruolo);
+    }
+
 }

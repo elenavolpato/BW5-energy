@@ -55,6 +55,6 @@ public class EmailSender {
                 .queryString("text", body.testo())
                 .asJson();
         System.out.println(response.getBody());
-        return new InvioEmailDTO("Email inviata all'indirizzo " + body.emailMittente() + " inviata con successo!", LocalDateTime.now());
+        return new InvioEmailDTO("Email inviata all'indirizzo " + body.emailDestinatario() + " inviata con successo!", LocalDateTime.now());
     }
 }

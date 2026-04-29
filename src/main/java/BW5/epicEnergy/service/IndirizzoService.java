@@ -9,7 +9,6 @@ import BW5.epicEnergy.repositories.ComuneRepository;
 import BW5.epicEnergy.repositories.IndirizzoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -62,16 +61,30 @@ public class IndirizzoService {
     public Indirizzo updateIndirizzo(UUID id, Indirizzo details) {
         Indirizzo existing = indirizzoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Indirizzo non trovato con id: " + id));
+        Comune found = findByComuneId(details.getComune().getId());
+
+        if (
+                !existing.getVia().equals(details.getVia())
+                        || !existing.getCap().equals(details.getCap())
+                        || !existing.getCivico().equals(details.getCivico())
+                        || !existing.getLocalita().equals(details.getLocalita())
+                        || !existing.getComune().getId().equals(details.getComune().getId())
+        ) {
+            if (indirizzoRepository.existsIndirizzoByViaAndCapAndCivicoAndLocalitaAndComune(details.getVia(), details.getCap(), details.getCivico(), details.getLocalita(), found)) {
+                throw new BadRequestException("Indirizzo già esistente nel DB");
+            }
+        }
 
         existing.setVia(details.getVia());
         existing.setCivico(details.getCivico());
         existing.setCap(details.getCap());
         existing.setLocalita(details.getLocalita());
+        existing.setComune(found);
 
-        if (details.getComune() != null) {
+       /* if (details.getComune() != null) {
             Comune foundComune = comuneRepository.findComuneById(details.getComune().getId());
             existing.setComune(foundComune);
-        }
+        }*/
 
         return indirizzoRepository.save(existing);
     }

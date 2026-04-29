@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -30,7 +31,6 @@ public class UtenteService {
     private final UtenteRepository utenteRepository;
     private final PasswordEncoder bcrypt;
     private final EmailSender emailSender;
-    private final RuoliUtenteService ruoliUtenteService;
     private final RuoliService ruoliService;
     private final RuoliUtenteRepository ruoliUtenteRepository;
 
@@ -38,14 +38,13 @@ public class UtenteService {
         this.utenteRepository = utenteRepository;
         this.bcrypt = bcrypt;
         this.emailSender = emailSender;
-        this.ruoliUtenteService = ruoliUtenteService;
         this.ruoliService = ruoliService;
         this.ruoliUtenteRepository = ruoliUtenteRepository;
     }
 
-    public RuoliUtente assegnaRuoloAUtente(AssegnazioneRuoloUtenteDTO body) {
+    public RuoliUtente assegnaRuoloAUtente(UUID idUtente, AssegnazioneRuoloUtenteDTO body) {
         Ruoli ruoloDalDB = ruoliService.findByRuolo(body.ruolo().toUpperCase().trim());
-        Utente utenteDalDB = findById(body.idUtente());
+        Utente utenteDalDB = findById(idUtente);
         if (ruoliUtenteRepository.existsByRuolo_IdAndUtente_Id(ruoloDalDB.getId(), utenteDalDB.getId()))
             throw new BadRequestException("Ruolo " + ruoloDalDB.getRuolo() + " già assegnato all'utente con id " + utenteDalDB.getId());
         RuoliUtente nuovaAssegnazioneRuolo = new RuoliUtente(ruoloDalDB, utenteDalDB);
@@ -54,6 +53,24 @@ public class UtenteService {
         return assegnazioneRuoloSalvata;
     }
 
+    public void eliminaRuoloAUtente(UUID idUtente, String ruolo) {
+        if (ruolo.toUpperCase().trim().equals("UTENTE"))
+            throw new BadRequestException("Impossibile eliminare il ruolo di UTENTE da qualsiasi utente registrato");
+
+        Ruoli ruoloDalDB = ruoliService.findByRuolo(ruolo.toUpperCase().trim());
+        Utente utenteDalDB = findById(idUtente);
+
+        Optional<RuoliUtente> assegnazioneRuolo = ruoliUtenteRepository.findByRuoloAndUtente(ruoloDalDB, utenteDalDB);
+        if (assegnazioneRuolo.isPresent()) {
+            RuoliUtente assegnazioneDaEliminare = assegnazioneRuolo.get();
+            System.out.println(assegnazioneDaEliminare.getId());
+            utenteDalDB.getRuoli().remove(assegnazioneDaEliminare);
+            this.ruoliUtenteRepository.delete(assegnazioneDaEliminare);
+            log.info("Ruolo di '" + ruoloDalDB.getRuolo() + "' eliminato con successo dai ruoli dell'utente con id " + utenteDalDB.getId());
+        } else {
+            throw new BadRequestException("Ruolo " + ruoloDalDB.getRuolo() + " già non assegnato all'utente con id " + utenteDalDB.getId());
+        }
+    }
 
     public Utente save(UtenteDTO body) {
 
@@ -62,7 +79,7 @@ public class UtenteService {
 
         Utente newU = this.utenteRepository.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()), body.nome(), body.cognome()));
 
-        this.assegnaRuoloAUtente(new AssegnazioneRuoloUtenteDTO("UTENTE", newU.getId()));
+        this.assegnaRuoloAUtente(newU.getId(), new AssegnazioneRuoloUtenteDTO("UTENTE"));
         // qia assegno di default il ruolo di UTENTE
         /*newU.addRuolo("utente");*/
 
