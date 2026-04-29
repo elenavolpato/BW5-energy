@@ -58,11 +58,12 @@ public class Utente implements UserDetails {
     }
 
     // metodo per aggiungere un ruolo all'utente, si richiama dal service
-    public void addRuolo(Ruoli ruolo) {
-        boolean exist = this.ruoli.stream().anyMatch(r -> r.getRuolo() == ruolo);
+    public void addRuolo(String ruolo) {
+        boolean exist = this.ruoli.stream().anyMatch(r -> r.getRuolo().equals(ruolo.trim().toUpperCase()));
         if (!exist) {
             RuoliUtente nuovoRuolo = new RuoliUtente();
-            nuovoRuolo.setRuolo(ruolo);
+            Ruoli newRuolo = new Ruoli(ruolo.trim().toUpperCase());
+            nuovoRuolo.setRuolo(newRuolo);
             nuovoRuolo.setUtente(this);
             this.ruoli.add(nuovoRuolo);
         }
@@ -70,6 +71,6 @@ public class Utente implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.ruoli.stream().map(r -> new SimpleGrantedAuthority(r.getRuolo().name())).toList();
+        return this.ruoli.stream().map(r -> new SimpleGrantedAuthority(r.getRuolo().toString())).toList();
     }
 }
