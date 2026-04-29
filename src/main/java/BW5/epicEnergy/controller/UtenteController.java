@@ -1,6 +1,7 @@
 package BW5.epicEnergy.controller;
 
 import BW5.epicEnergy.DTO.EmailDTO;
+import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.service.ClientiService;
@@ -70,7 +71,7 @@ public class UtenteController {
 
     @PostMapping("/invioEmail")
     @ResponseStatus(HttpStatus.CREATED)
-    public String inviaEmail(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody @Validated EmailDTO body) {
+    public InvioEmailDTO inviaEmail(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody @Validated EmailDTO body) {
         System.out.println(currentAuthenticatedUser.getNome());
         return this.utenteService.inviaEmail(currentAuthenticatedUser, body);
     }

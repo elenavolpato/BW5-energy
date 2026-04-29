@@ -1,6 +1,7 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.EmailDTO;
+import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.exception.EmailAlreadyExistsException;
@@ -76,7 +77,7 @@ public class UtenteService {
         this.utenteRepository.delete(this.findById(utenteId));
     }
 
-    public String inviaEmail(Utente currentAuthenticatedUser, EmailDTO body) {
+    public InvioEmailDTO inviaEmail(Utente currentAuthenticatedUser, EmailDTO body) {
         return this.emailSender.sendEmail(currentAuthenticatedUser, body);
     }
 

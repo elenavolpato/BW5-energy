@@ -2,17 +2,16 @@ package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
 import BW5.epicEnergy.DTO.EmailDTO;
-import BW5.epicEnergy.DTO.IndirizzoDTO;
+import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
 import BW5.epicEnergy.enums.TipoCliente;
 import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ClientiRepository;
+import BW5.epicEnergy.tools.EmailSender;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import BW5.epicEnergy.tools.EmailSender;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,13 +19,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -122,12 +119,12 @@ public class ClientiService {
         return this.clienteRepository.findAll(specification, pageable);
     }
 
-    public String inviaEmailACliente(String clienteId, EmailDTO body) {
+    public InvioEmailDTO inviaEmailACliente(String clienteId, EmailDTO body) {
         Cliente cliente = this.findById(clienteId);
         return this.emailSender.sendEmailToCustomer(cliente, body);
     }
 
-    public String inviaEmailAContattoCliente(String clienteId, EmailDTO body) {
+    public InvioEmailDTO inviaEmailAContattoCliente(String clienteId, EmailDTO body) {
         Cliente cliente = this.findById(clienteId);
         return this.emailSender.sendEmailToCustomerReferent(cliente, body);
     }
@@ -149,12 +146,12 @@ public class ClientiService {
         return this.clienteRepository.save(cliente);
     }
 
-    public void delete(UUID id) {
+    /*public void delete(UUID id) {
         Cliente cliente = this.findById(id);
         clienteRepository.deleteById(id);
-    }
+    }*/
 
-    public Cliente avatarUpload (UUID id, MultipartFile file) {
+    public Cliente avatarUpload(UUID id, MultipartFile file) {
         Cliente cliente = this.findById(id);
         Map uploadResult;
         try {
@@ -168,13 +165,25 @@ public class ClientiService {
         return this.clienteRepository.save(cliente);
     }
 
-    public void deleteCliente(UUID id) {
+   /* public void deleteCliente(UUID id) {
         System.out.println("-------------- " + id);
         if (!clienteRepository.existsById(id)) {
             throw new EntityNotFoundException("Impossibile eliminare: cliente non trovato con id: " + id);
         }
         clienteRepository.deleteById(id);
-    }
+    }*/
 
+    public void deleteCliente(UUID id) {
+        Cliente found = this.findById(id);
+        Indirizzo sedeLegale = found.getSedeLegale();
+        Indirizzo sedeOperativa = found.getSedeOperativa();
+        this.clienteRepository.delete(found);
+        if (sedeLegale.getId().equals(sedeOperativa.getId())) {
+            this.indirizzoService.deleteIndirizzo(sedeLegale.getId());
+        } else {
+            this.indirizzoService.deleteIndirizzo(sedeLegale.getId());
+            this.indirizzoService.deleteIndirizzo(sedeOperativa.getId());
+        }
+    }
 
 }

@@ -20,13 +20,13 @@ public class StatoFatturaService {
     public UUID save(StatoFatturaDTO body) {
         if (statoFatturaRepository.existsByTipo(body.tipo()))
             throw new BadRequestException("Tipo di stato già presente nel database");
-        StatoFattura nuovoStatoFattura = new StatoFattura(body.tipo());
+        StatoFattura nuovoStatoFattura = new StatoFattura(body.tipo().toUpperCase().trim());
         StatoFattura statoFatturaSalvato = this.statoFatturaRepository.save(nuovoStatoFattura);
         log.info("Stato fattura con id " + statoFatturaSalvato.getId() + " salvato con successo!");
         return statoFatturaSalvato.getId();
     }
 
     public StatoFattura findByTipo(String tipo) {
-        return this.statoFatturaRepository.findByTipo(tipo).orElseThrow(() -> new NotFoundException("invoice status"));
+        return this.statoFatturaRepository.findByTipo(tipo.toUpperCase().trim()).orElseThrow(() -> new NotFoundException("invoice status"));
     }
 }

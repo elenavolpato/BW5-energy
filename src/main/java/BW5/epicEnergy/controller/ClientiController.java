@@ -2,6 +2,7 @@ package BW5.epicEnergy.controller;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
 import BW5.epicEnergy.DTO.EmailDTO;
+import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.ClientiService;
@@ -14,9 +15,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,12 +56,12 @@ public class ClientiController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCliente(@PathVariable UUID id) {
-        this.clientiService.delete(id);
+        this.clientiService.deleteCliente(id);
     }
 
     @PatchMapping("/{id}/logo")
     public Cliente avatarUpload(@PathVariable UUID id,
-                              @RequestParam("logo") MultipartFile file) throws IOException {
+                                @RequestParam("logo") MultipartFile file) throws IOException {
         return this.clientiService.avatarUpload(id, file);
     }
 
@@ -107,15 +109,15 @@ public class ClientiController {
 
     @PostMapping("/{clienteId}/invioEmail")
     @ResponseStatus(HttpStatus.CREATED)
-    public String inviaEmailACliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
+    public InvioEmailDTO inviaEmailACliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
         return this.clientiService.inviaEmailACliente(clienteId, body);
     }
 
     @PostMapping("/{clienteId}/referente/invioEmail")
     @ResponseStatus(HttpStatus.CREATED)
-    public String inviaEmailAContattoCliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
+    public InvioEmailDTO inviaEmailAContattoCliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
         return this.clientiService.inviaEmailAContattoCliente(clienteId, body);
     }
 
-    
+
 }
