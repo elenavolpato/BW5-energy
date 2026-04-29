@@ -23,10 +23,11 @@ public class CsvImportRunner implements CommandLineRunner {
             InputStream provStream = new ClassPathResource("csv/province-italiane.csv").getInputStream();
             InputStream comStream = new ClassPathResource("csv/comuni-italiani.csv").getInputStream();
 
+
             importService.importProvince(provStream);
             importService.importComuni(comStream);
 
-            System.out.println("Import successful!");
+            System.out.println("Import comuni e province finished!");
         } catch (Exception e) {
             System.err.println("Import failed: " + e.getMessage());
         }

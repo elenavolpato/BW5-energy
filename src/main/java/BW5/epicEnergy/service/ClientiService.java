@@ -2,6 +2,7 @@ package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
 import BW5.epicEnergy.DTO.EmailDTO;
+import BW5.epicEnergy.DTO.IndirizzoDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
 import BW5.epicEnergy.enums.TipoCliente;
