@@ -1,27 +1,27 @@
 package BW5.epicEnergy.controller;
 
+import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
 import BW5.epicEnergy.entity.Utente;
+import BW5.epicEnergy.service.ClientiService;
 import BW5.epicEnergy.service.UtenteService;
-import BW5.epicEnergy.tools.EmailSender;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
 @RestController
 @RequestMapping("/utenti")
 public class UtenteController {
 
     private final UtenteService utenteService;
 
-    public UtenteController(UtenteService utenteService, EmailSender emailSender) {
+    public UtenteController(UtenteService utenteService, ClientiService clientiService) {
         this.utenteService = utenteService;
-
     }
 
     @GetMapping
@@ -34,6 +34,7 @@ public class UtenteController {
 
     @GetMapping("/me")
     public Utente getOwnProfile(@AuthenticationPrincipal Utente currentAuthenticatedUser) {
+        System.out.println(currentAuthenticatedUser.getNome());
         return currentAuthenticatedUser;
     }
 
@@ -50,14 +51,14 @@ public class UtenteController {
 
     @GetMapping("/{utenteId}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public Utente getById(@PathVariable UUID userId) {
-        return this.utenteService.findById(userId);
+    public Utente getById(@PathVariable UUID utenteId) {
+        return this.utenteService.findById(utenteId);
     }
 
     @PutMapping("/{utenteId}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public Utente getByIdAndUpdate(@PathVariable UUID userId, @RequestBody UtenteDTO body) {
-        return this.utenteService.update(userId, body);
+    public Utente getByIdAndUpdate(@PathVariable UUID utenteId, @RequestBody UtenteDTO body) {
+        return this.utenteService.update(utenteId, body);
     }
 
     @DeleteMapping("/{utenteId}")
@@ -67,9 +68,10 @@ public class UtenteController {
         this.utenteService.delete(utenteId);
     }
 
-    /*@PostMapping("/invioEmail")
+    @PostMapping("/invioEmail")
     @ResponseStatus(HttpStatus.CREATED)
-    public String inviaEmail(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
-        return this.clientiService.inviaEmailAContattoCliente(clienteId, body);
-    }*/
+    public String inviaEmail(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody @Validated EmailDTO body) {
+        System.out.println(currentAuthenticatedUser.getNome());
+        return this.utenteService.inviaEmail(currentAuthenticatedUser, body);
+    }
 }
