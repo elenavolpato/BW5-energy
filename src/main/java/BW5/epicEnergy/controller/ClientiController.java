@@ -13,9 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,32 @@ public class ClientiController {
             throw new PayloadValidationException(errors);
         }
         return this.clientiService.save(body);
+    }
+
+//    @GetMapping
+//    public List<Cliente> findAll() {
+//        return this.clientiService.findAll();
+//    }
+
+    @PutMapping("/{id}")
+    public Cliente aggiornaCliente(@PathVariable UUID id, @RequestBody @Validated ClienteDTO body, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
+            throw new PayloadValidationException(errors);
+        }
+        return this.clientiService.update(id, body);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCliente(@PathVariable UUID id) {
+        this.clientiService.delete(id);
+    }
+
+    @PatchMapping("/{id}/logo")
+    public Cliente avatarUpload(@PathVariable UUID id,
+                              @RequestParam("logo") MultipartFile file) throws IOException {
+        return this.clientiService.avatarUpload(id, file);
     }
 
     /*@GetMapping
@@ -90,9 +117,5 @@ public class ClientiController {
         return this.clientiService.inviaEmailAContattoCliente(clienteId, body);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCliente(@PathVariable UUID id) {
-        clientiService.deleteCliente(id);
-    }
+    
 }

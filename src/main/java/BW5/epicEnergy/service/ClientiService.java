@@ -9,6 +9,8 @@ import BW5.epicEnergy.enums.TipoCliente;
 import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ClientiRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import BW5.epicEnergy.tools.EmailSender;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -20,10 +22,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -32,6 +36,7 @@ import java.util.UUID;
 public class ClientiService {
     private final ClientiRepository clienteRepository;
     private final IndirizzoService indirizzoService;
+    private final Cloudinary cloudinary;
     private final EmailSender emailSender;
 
     public UUID save(ClienteDTO body) {
@@ -91,6 +96,10 @@ public class ClientiService {
         return this.clienteRepository.findById(UUID.fromString(clienteId)).orElseThrow(() -> new NotFoundException("customer"));
     }
 
+    public Cliente findById(UUID id) {
+        return this.clienteRepository.findById(id).orElseThrow(() -> new NotFoundException("customer"));
+    }
+
     public Page<Cliente> findAll(Specification<Cliente> specification, int page, int size, String sortBy, String order) {
         if (page < 0) page = 0;
         if (size < 0 || size > 100) size = 10;
@@ -121,6 +130,42 @@ public class ClientiService {
     public String inviaEmailAContattoCliente(String clienteId, EmailDTO body) {
         Cliente cliente = this.findById(clienteId);
         return this.emailSender.sendEmailToCustomerReferent(cliente, body);
+    }
+
+    public Cliente update(UUID id, ClienteDTO body) {
+        Cliente cliente = this.findById(id);
+        cliente.setRagioneSociale(body.ragioneSociale());
+        cliente.setPartitaIva(body.partitaIva());
+        cliente.setEmail(body.email());
+        cliente.setFatturatoAnnuale(body.fatturatoAnnuale());
+        cliente.setPec(body.pec());
+        cliente.setTelefono(body.telefono());
+        cliente.setEmailContatto(body.emailContatto());
+        cliente.setNomeContatto(body.nomeContatto());
+        cliente.setCognomeContatto(body.cognomeContatto());
+        cliente.setTelefonoContatto(body.telefonoContatto());
+        cliente.setDataUltimoContatto(LocalDate.now());
+        cliente.setTipo(TipoCliente.valueOf(body.tipo()));
+        return this.clienteRepository.save(cliente);
+    }
+
+    public void delete(UUID id) {
+        Cliente cliente = this.findById(id);
+        clienteRepository.deleteById(id);
+    }
+
+    public Cliente avatarUpload (UUID id, MultipartFile file) {
+        Cliente cliente = this.findById(id);
+        Map uploadResult;
+        try {
+            uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("public_id", "clienti/" + id));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String url = (String) uploadResult.get("secure_url");
+        cliente.setLogoAziendale(url);
+        return this.clienteRepository.save(cliente);
     }
 
     public void deleteCliente(UUID id) {
