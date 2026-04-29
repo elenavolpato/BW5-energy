@@ -12,6 +12,11 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,11 +44,49 @@ public class ClientiService {
 
         if (this.clienteRepository.existsByPartitaIva(body.partitaIva()))
             throw new BadRequestException("Partita IVA già associata ad un altro cliente");
-        Cliente nuovoCliente = new Cliente(
-                body.ragioneSociale(), body.partitaIva(), body.email(),
-                body.fatturatoAnnuale(), body.pec(), body.telefono(),
-                body.emailContatto(), body.nomeContatto(), body.cognomeContatto(), body.telefonoContatto(), sedeL, sedeO, TipoCliente.valueOf(body.tipo())
-        );
+
+        Indirizzo sedeLegale;
+        Indirizzo sedeOperativa;
+        Cliente nuovoCliente = null;
+        try {
+            sedeLegale = this.indirizzoService.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(
+                    body.sedeLegale().via(),
+                    body.sedeLegale().civico(),
+                    body.sedeLegale().localita(),
+                    body.sedeLegale().cap(),
+                    body.sedeLegale().comune());
+            if (this.clienteRepository.existsBySedeLegaleOrSedeOperativa(sedeLegale, sedeLegale))
+                throw new BadRequestException("Sede legale già associata ad un altro cliente");
+        } catch (NotFoundException ex) {
+            try {
+                sedeOperativa = this.indirizzoService.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(
+                        body.sedeOperativa().via(),
+                        body.sedeOperativa().civico(),
+                        body.sedeOperativa().localita(),
+                        body.sedeOperativa().cap(),
+                        body.sedeOperativa().comune());
+                if (this.clienteRepository.existsBySedeLegaleOrSedeOperativa(sedeOperativa, sedeOperativa))
+                    throw new BadRequestException("Sede operativa già associata ad un altro cliente");
+            } catch (NotFoundException e) {
+                sedeLegale = indirizzoService.save(body.sedeLegale());
+                try {
+                    sedeOperativa = indirizzoService.save(body.sedeOperativa());
+                    nuovoCliente = new Cliente(
+                            body.ragioneSociale(), body.partitaIva(), body.email(),
+                            body.fatturatoAnnuale(), body.pec(), body.telefono(),
+                            body.emailContatto(), body.nomeContatto(), body.cognomeContatto(), body.telefonoContatto(), sedeLegale, sedeOperativa, TipoCliente.valueOf(body.tipo())
+                    );
+
+                } catch (BadRequestException exception) {
+                    nuovoCliente = new Cliente(
+                            body.ragioneSociale(), body.partitaIva(), body.email(),
+                            body.fatturatoAnnuale(), body.pec(), body.telefono(),
+                            body.emailContatto(), body.nomeContatto(), body.cognomeContatto(), body.telefonoContatto(), sedeLegale, sedeLegale, TipoCliente.valueOf(body.tipo())
+                    );
+                }
+            }
+        }
+        assert nuovoCliente != null;
         Cliente clienteSalvato = this.clienteRepository.save(nuovoCliente);
         log.info("Cliente con id " + clienteSalvato.getId() + " salvato con successo!");
         return clienteSalvato.getId();
@@ -60,6 +103,28 @@ public class ClientiService {
 
     public Cliente findById(UUID id) {
         return this.clienteRepository.findById(id).orElseThrow(() -> new NotFoundException("customer"));
+    }
+
+    public Page<Cliente> findAll(Specification<Cliente> specification, int page, int size, String sortBy, String order) {
+        if (page < 0) page = 0;
+        if (size < 0 || size > 100) size = 10;
+
+        String criterioOrdine = switch (sortBy) {
+            case "nome" -> "ragioneSociale";
+            case "fatturato" -> "fatturatoAnnuale";
+            case "inserimento" -> "dataInserimento";
+            case "ultimoContatto" -> "dataUltimoContatto";
+            case "sedeLegale" -> "sedeLegale.comune.provincia.nome";
+            default -> throw new BadRequestException("Criterio di ordinamento non valido");
+        };
+
+        Pageable pageable = switch (order) {
+            case "asc" -> PageRequest.of(page, size, Sort.by(criterioOrdine));
+            case "disc" -> PageRequest.of(page, size, Sort.by(criterioOrdine).reverse());
+            default -> throw new BadRequestException("Criterio di ordinamento non valido");
+        };
+
+        return this.clienteRepository.findAll(specification, pageable);
     }
 
     public Cliente update(UUID id, ClienteDTO body) {

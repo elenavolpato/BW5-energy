@@ -6,12 +6,17 @@ import BW5.epicEnergy.entity.Fattura;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.FattureService;
 import BW5.epicEnergy.service.StatoFatturaService;
+import BW5.epicEnergy.specifications.FatturaSpecification;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,29 +47,41 @@ public class FattureController {
         return this.statoFatturaService.save(body);
     }
 
-    //Salve capo-gruppo, ho aggiunto queste operazioni.
     @GetMapping
-    public List<Fattura> findAll() {
-        return this.fattureService.findAll();
-    }
+    public Page<Fattura> ottieniFattureOrdinateEFiltrate(@RequestParam(required = false) UUID idCliente,
+                                                         @RequestParam(required = false) String nomeCliente,
+                                                         @RequestParam(required = false) String parteNomeCliente,
+                                                         @RequestParam(required = false) String stato,
+                                                         @RequestParam(required = false) LocalDate dataDopoDi,
+                                                         @RequestParam(required = false) LocalDate dataPrimaDi,
+                                                         @RequestParam(required = false) LocalDate data,
+                                                         @RequestParam(required = false) Integer annoDopoDi,
+                                                         @RequestParam(required = false) Integer annoPrimaDi,
+                                                         @RequestParam(required = false) Integer anno,
+                                                         @RequestParam(required = false) BigDecimal importoMin,
+                                                         @RequestParam(required = false) BigDecimal importoMax,
+                                                         @RequestParam(required = false) BigDecimal importo,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "numero") String sortBy,
+                                                         @RequestParam(defaultValue = "asc") String order) {
 
-    @GetMapping("/{id}")
-    public Fattura findById(@PathVariable UUID id) {
-        return this.fattureService.findById(id);
-    }
+        Specification<Fattura> specification = FatturaSpecification.filtra(
+                idCliente,
+                nomeCliente,
+                parteNomeCliente,
+                stato,
+                dataDopoDi,
+                dataPrimaDi,
+                data,
+                annoDopoDi,
+                annoPrimaDi,
+                anno,
+                importoMin,
+                importoMax,
+                importo
+        );
 
-    @PutMapping("/{id}")
-    public Fattura updateFattura(@PathVariable UUID id, @RequestBody @Validated FatturaDTO body, BindingResult validationResult) {
-        if (validationResult.hasErrors()) {
-            List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
-            throw new PayloadValidationException(errors);
-        }
-        return this.fattureService.updateFattura(id, body);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteFattura(@PathVariable UUID id) {
-        this.fattureService.deleteById(id);
+        return this.fattureService.findAll(specification, page, size, sortBy, order);
     }
 }

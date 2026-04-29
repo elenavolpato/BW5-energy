@@ -7,9 +7,7 @@ import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ComuneRepository;
 import BW5.epicEnergy.repositories.IndirizzoRepository;
-//import BW5.epicEnergy.repositories.ProvinciaRepository;
 import lombok.AllArgsConstructor;
-import lombok.ToString;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,8 +15,7 @@ import org.springframework.stereotype.Service;
 
 public class IndirizzoService {
     private final ComuneRepository comuneRepository;
-    //private  final ProvinciaRepository provinciaRepository;
-    private  final IndirizzoRepository indirizzoRepository;
+    private final IndirizzoRepository indirizzoRepository;
 
     public Comune findByComuneId(Long id) {
         Comune c = comuneRepository.findComuneById(id);
@@ -28,11 +25,11 @@ public class IndirizzoService {
         return c;
     }
 
-    public Indirizzo save(IndirizzoDTO indirizzoDTO ){
+    public Indirizzo save(IndirizzoDTO indirizzoDTO) {
         Comune found = findByComuneId(indirizzoDTO.comune());
 
-        if(indirizzoRepository.existsIndirizzoByViaAndCapAndCivicoAndLocalitaAndComune(indirizzoDTO.via(), indirizzoDTO.cap(), indirizzoDTO.civico(), indirizzoDTO.localita(), found)){
-            throw new BadRequestException("Indirizzo già esistente nell DB");
+        if (indirizzoRepository.existsIndirizzoByViaAndCapAndCivicoAndLocalitaAndComune(indirizzoDTO.via(), indirizzoDTO.cap(), indirizzoDTO.civico(), indirizzoDTO.localita(), found)) {
+            throw new BadRequestException("Indirizzo già esistente nel DB");
         }
 
         Indirizzo nuovoIndirizzo = new Indirizzo(
@@ -41,10 +38,12 @@ public class IndirizzoService {
                 indirizzoDTO.localita(),
                 indirizzoDTO.cap(),
                 found
-                );
-
+        );
 
         return indirizzoRepository.save(nuovoIndirizzo);
+    }
 
+    public Indirizzo findByViaAndCivicoAndLocalitaAndCapAndComune_Id(String via, String civico, String localita, String cap, Long comuneId) {
+        return this.indirizzoRepository.findByViaAndCivicoAndLocalitaAndCapAndComune_Id(via, civico, localita, cap, comuneId).orElseThrow(() -> new NotFoundException("address"));
     }
 }
