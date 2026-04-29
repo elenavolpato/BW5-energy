@@ -16,7 +16,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "ruoli")
 public class Ruoli {
-
     @Id
     @GeneratedValue
     private UUID id;

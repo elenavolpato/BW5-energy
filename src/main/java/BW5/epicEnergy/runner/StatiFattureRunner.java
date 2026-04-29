@@ -28,11 +28,11 @@ public class StatiFattureRunner implements CommandLineRunner {
                 new StatoFatturaDTO("RIFIUTATA")
         ));
 
-        listaStatiFatture.forEach(statoFattura -> {
+        listaStatiFatture.forEach(statoFatturaDTO -> {
             try {
-                statoFatturaService.save(statoFattura);
+                statoFatturaService.save(statoFatturaDTO);
             } catch (BadRequestException e) {
-                System.out.println("Stato fattura già presente nel database");
+                System.out.println("Stato fattura " + statoFatturaDTO.tipo() + " già presente nel database");
             }
         });
         System.out.println("Stati fatture inizializzati con successo!");
