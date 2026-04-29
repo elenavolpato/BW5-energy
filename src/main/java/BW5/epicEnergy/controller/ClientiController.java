@@ -1,6 +1,7 @@
 package BW5.epicEnergy.controller;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
+import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.ClientiService;
@@ -102,5 +103,17 @@ public class ClientiController {
         );
 
         return this.clientiService.findAll(specification, page, size, sortBy, order);
+    }
+
+    @PostMapping("/{clienteId}/invioEmail")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String inviaEmailACliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
+        return this.clientiService.inviaEmailACliente(clienteId, body);
+    }
+
+    @PostMapping("/{clienteId}/referente/invioEmail")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String inviaEmailAContattoCliente(@PathVariable String clienteId, @RequestBody @Validated EmailDTO body) {
+        return this.clientiService.inviaEmailAContattoCliente(clienteId, body);
     }
 }

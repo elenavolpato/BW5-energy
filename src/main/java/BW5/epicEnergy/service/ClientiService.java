@@ -1,6 +1,7 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.ClienteDTO;
+import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.DTO.IndirizzoDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
@@ -10,6 +11,7 @@ import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.ClientiRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import BW5.epicEnergy.tools.EmailSender;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,6 +35,7 @@ public class ClientiService {
     private final ClientiRepository clienteRepository;
     private final IndirizzoService indirizzoService;
     private final Cloudinary cloudinary;
+    private final EmailSender emailSender;
 
     public UUID save(ClienteDTO body) {
 
@@ -96,11 +99,6 @@ public class ClientiService {
         return this.clienteRepository.findById(UUID.fromString(clienteId)).orElseThrow(() -> new NotFoundException("customer"));
     }
 
-    //aggiungo operazioni CRUD
-    public List<Cliente> findAll() {
-        return this.clienteRepository.findAll();
-    }
-
     public Cliente findById(UUID id) {
         return this.clienteRepository.findById(id).orElseThrow(() -> new NotFoundException("customer"));
     }
@@ -125,6 +123,16 @@ public class ClientiService {
         };
 
         return this.clienteRepository.findAll(specification, pageable);
+    }
+
+    public String inviaEmailACliente(String clienteId, EmailDTO body) {
+        Cliente cliente = this.findById(clienteId);
+        return this.emailSender.sendEmailToCustomer(cliente, body);
+    }
+
+    public String inviaEmailAContattoCliente(String clienteId, EmailDTO body) {
+        Cliente cliente = this.findById(clienteId);
+        return this.emailSender.sendEmailToCustomerReferent(cliente, body);
     }
 
     public Cliente update(UUID id, ClienteDTO body) {
