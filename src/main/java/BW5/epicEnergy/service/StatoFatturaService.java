@@ -35,6 +35,13 @@ public class StatoFatturaService {
         return this.statoFatturaRepository.findByTipo(tipo).orElseThrow(() -> new NotFoundException("invoice status"));
     }
 
+    public StatoFattura finbByTipoAndUpdate(String tipo, StatoFatturaDTO body) {
+        StatoFattura toUpdate = this.findByTipo(tipo);
+        toUpdate.setTipo(body.tipo());
+        StatoFattura updated = this.statoFatturaRepository.save(toUpdate);
+        return updated;
+    }
+
     public void delete(String tipo) {
 
         String noState = "nessuno stato";

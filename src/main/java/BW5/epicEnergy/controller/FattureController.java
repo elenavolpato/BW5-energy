@@ -3,6 +3,7 @@ package BW5.epicEnergy.controller;
 import BW5.epicEnergy.DTO.FatturaDTO;
 import BW5.epicEnergy.DTO.StatoFatturaDTO;
 import BW5.epicEnergy.entity.Fattura;
+import BW5.epicEnergy.entity.StatoFattura;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.FattureService;
 import BW5.epicEnergy.service.StatoFatturaService;
@@ -47,6 +48,19 @@ public class FattureController {
         }
         return this.statoFatturaService.save(body);
     }
+
+    @DeleteMapping("/stati/{tipo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStato(@PathVariable String tipo) {
+        this.statoFatturaService.delete(tipo);
+    }
+
+    @PutMapping("/stati/{tipo}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public StatoFattura findByTipoAnbUpdate(@PathVariable String tipo, @RequestBody StatoFatturaDTO body) {
+        return this.statoFatturaService.finbByTipoAndUpdate(tipo, body);
+    }
+
 
     @GetMapping("/{fatturaId}")
     @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
