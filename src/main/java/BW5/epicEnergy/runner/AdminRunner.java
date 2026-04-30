@@ -3,7 +3,7 @@ package BW5.epicEnergy.runner;
 import BW5.epicEnergy.DTO.AssegnazioneRuoloUtenteDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
 import BW5.epicEnergy.entity.Utente;
-import BW5.epicEnergy.exception.EmailAlreadyExistsException;
+import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.service.UtenteService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -30,7 +30,7 @@ public class AdminRunner implements CommandLineRunner {
 
             Utente primoUtenteSalvato = this.utenteService.save(primoUtente);
             this.utenteService.assegnaRuoloAUtente(primoUtenteSalvato.getId(), new AssegnazioneRuoloUtenteDTO("ADMIN"));
-        } catch (EmailAlreadyExistsException e) {
+        } catch (BadRequestException e) {
             System.out.println("Primo utente già salvato nel database!");
         }
 

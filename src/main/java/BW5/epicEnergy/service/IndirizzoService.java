@@ -80,12 +80,7 @@ public class IndirizzoService {
         existing.setCap(details.getCap());
         existing.setLocalita(details.getLocalita());
         existing.setComune(found);
-
-       /* if (details.getComune() != null) {
-            Comune foundComune = comuneRepository.findComuneById(details.getComune().getId());
-            existing.setComune(foundComune);
-        }*/
-
+        
         return indirizzoRepository.save(existing);
     }
 }

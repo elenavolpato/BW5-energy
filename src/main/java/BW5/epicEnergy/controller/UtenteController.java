@@ -31,7 +31,7 @@ public class UtenteController {
     @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Page<Utente> getUsers(@RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "10") int size,
-                                 @RequestParam(defaultValue = "surname") String sortBy) {
+                                 @RequestParam(defaultValue = "cognome") String sortBy) {
         return this.utenteService.findAll(page, size, sortBy);
     }
 

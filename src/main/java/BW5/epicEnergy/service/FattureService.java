@@ -42,9 +42,6 @@ public class FattureService {
             case "data" -> "data";
             case "importo" -> "importo";
             case "numero" -> "numero";
-            /*case "idCliente" -> "cliente";
-            case "nomeCliente" -> "cliente.ragioneSociale";
-            case "partitaIvaCliente" -> "cliente.partitaIva";*/
             default -> throw new BadRequestException("Criterio di ordinamento non valido");
         };
 

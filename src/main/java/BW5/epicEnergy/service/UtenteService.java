@@ -8,7 +8,6 @@ import BW5.epicEnergy.entity.Ruoli;
 import BW5.epicEnergy.entity.RuoliUtente;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.exception.BadRequestException;
-import BW5.epicEnergy.exception.EmailAlreadyExistsException;
 import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.RuoliUtenteRepository;
 import BW5.epicEnergy.repositories.UtenteRepository;
@@ -75,14 +74,15 @@ public class UtenteService {
     public Utente save(UtenteDTO body) {
 
         if (this.utenteRepository.existsByEmail((body.email())))
-            throw new EmailAlreadyExistsException("L'email" + body.email() + " con cui stai provando a registrarti è già associata ad un altro utente.");
-
+            throw new BadRequestException("L'email " + body.email() + " con cui stai provando a registrarti è già associata ad un altro utente.");
+        if (this.utenteRepository.existsByUsername(body.username()))
+            throw new BadRequestException("L'username " + body.username() + " con cui stai provando a registrarti è già associato ad un altro utente.");
         Utente newU = this.utenteRepository.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()), body.nome(), body.cognome()));
 
         this.assegnaRuoloAUtente(newU.getId(), new AssegnazioneRuoloUtenteDTO("UTENTE"));
 
         this.emailSender.sendRegistrationEmail(newU);
-        
+
         return newU;
     }
 
@@ -106,8 +106,14 @@ public class UtenteService {
     public Utente update(UUID utenteId, UtenteDTO body) {
         Utente toUpdate = this.findById(utenteId);
 
-        if (!toUpdate.getEmail().equals(body.email()))
-            throw new EmailAlreadyExistsException("L'email" + body.email() + " con cui stai provando a registrarti è già associata ad un altro utente.");
+        if (!toUpdate.getEmail().equals(body.email())) {
+            if (this.utenteRepository.existsByEmail((body.email())))
+                throw new BadRequestException("L'email " + body.email() + " è già associata ad un altro utente.");
+        }
+        if (!toUpdate.getUsername().equals(body.username())) {
+            if (this.utenteRepository.existsByUsername(body.username()))
+                throw new BadRequestException("L'username " + body.username() + " è già associato ad un altro utente.");
+        }
 
         toUpdate.setUsername(body.username());
         toUpdate.setEmail(body.email());
