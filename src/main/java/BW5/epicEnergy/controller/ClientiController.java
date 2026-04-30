@@ -29,6 +29,13 @@ import java.util.UUID;
 public class ClientiController {
     private final ClientiService clientiService;
 
+    @GetMapping("/{idCliente}")
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
+    public Cliente ottieniCliente(@PathVariable UUID idCliente) {
+        return this.clientiService.findById(idCliente);
+    }
+
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
