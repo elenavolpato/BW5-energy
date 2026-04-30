@@ -19,7 +19,6 @@ public class AdminRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("INIZIALIZZAZIONE PRIMO ADMIN ------------------");
-        /*Utente primoUtenteSalvato = null;*/
         try {
             UtenteDTO primoUtente = new UtenteDTO(
                     "giorgiaFormicola",
@@ -34,7 +33,7 @@ public class AdminRunner implements CommandLineRunner {
         } catch (EmailAlreadyExistsException e) {
             System.out.println("Primo utente già salvato nel database!");
         }
-        
+
         System.out.println("Primo admin registrato!");
     }
 }
