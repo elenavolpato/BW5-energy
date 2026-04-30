@@ -27,7 +27,7 @@ public class FattureService {
 
     public UUID save(FatturaDTO body) {
         Cliente found = this.clientiService.findById(body.clienteId());
-        StatoFattura caricata = this.statoFatturaService.findByTipo("CARICATA");
+        StatoFattura caricata = this.statoFatturaService.findByTipo("CREATA");
         Fattura nuovaFattura = new Fattura(body.importo(), found, caricata);
         Fattura fatturaSalvata = this.fattureRepository.save(nuovaFattura);
         log.info("Fattura con id " + fatturaSalvata.getId() + " salvata con successo!");

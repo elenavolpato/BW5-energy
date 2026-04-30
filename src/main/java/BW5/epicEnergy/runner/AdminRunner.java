@@ -21,11 +21,11 @@ public class AdminRunner implements CommandLineRunner {
         System.out.println("INIZIALIZZAZIONE PRIMO ADMIN ------------------");
         try {
             UtenteDTO primoUtente = new UtenteDTO(
-                    "giorgiaFormicola",
-                    "giorgia.formicola97@gmail.com",
+                    "marioRossi",
+                    "mario.rossi@gmail.com",
                     "Ciaone123",
-                    "Giorgia",
-                    "Formicola"
+                    "Mario",
+                    "Rossi"
             );
 
             Utente primoUtenteSalvato = this.utenteService.save(primoUtente);
