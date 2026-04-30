@@ -1,7 +1,6 @@
 package BW5.epicEnergy.DTO;
 
 
-import BW5.epicEnergy.entity.Indirizzo;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -27,7 +26,7 @@ public record ClienteDTO(
         String pec,
 
         @NotBlank(message = "Il numero di telefono è obbligatorio")
-        @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Il numero di telefono deve rispettare un formato valido")
+        @Pattern(regexp = "^\\d+$", message = "Il numero di telefono deve essere composto solo da caratteri numerici")
         String telefono,
 
         @NotBlank(message = "L'email del contatto è obbligatoria")
@@ -43,7 +42,7 @@ public record ClienteDTO(
         String cognomeContatto,
 
         @NotBlank(message = "Il numero di telefono del contatto è obbligatorio")
-        @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Il numero di telefono del contatto deve rispettare un formato valido")
+        @Pattern(regexp = "^\\d+$", message = "Il numero di telefono deve essere composto solo da caratteri numerici")
         String telefonoContatto,
 
         IndirizzoDTO sedeLegale,
