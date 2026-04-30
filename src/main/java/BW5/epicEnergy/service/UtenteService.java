@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public class UtenteService {
         this.ruoliUtenteRepository = ruoliUtenteRepository;
     }
 
-    public RuoliUtente assegnaRuoloAUtente(UUID idUtente, AssegnazioneRuoloUtenteDTO body) {
+    public InvioEmailDTO assegnaRuoloAUtente(UUID idUtente, AssegnazioneRuoloUtenteDTO body) {
         Ruoli ruoloDalDB = ruoliService.findByRuolo(body.ruolo().toUpperCase().trim());
         Utente utenteDalDB = findById(idUtente);
         if (ruoliUtenteRepository.existsByRuolo_IdAndUtente_Id(ruoloDalDB.getId(), utenteDalDB.getId()))
@@ -49,7 +50,7 @@ public class UtenteService {
         RuoliUtente nuovaAssegnazioneRuolo = new RuoliUtente(ruoloDalDB, utenteDalDB);
         RuoliUtente assegnazioneRuoloSalvata = this.ruoliUtenteRepository.save(nuovaAssegnazioneRuolo);
         log.info("Ruolo di '" + ruoloDalDB.getRuolo() + "' assegnato con successo all'utente con id " + utenteDalDB.getId());
-        return assegnazioneRuoloSalvata;
+        return new InvioEmailDTO("Ruolo di " + body.ruolo().toUpperCase().trim() + " asscoiato con successo all'utente con id " + idUtente + " !", LocalDateTime.now());
     }
 
     public void eliminaRuoloAUtente(UUID idUtente, String ruolo) {

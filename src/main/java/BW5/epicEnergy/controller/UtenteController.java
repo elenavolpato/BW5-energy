@@ -4,7 +4,6 @@ import BW5.epicEnergy.DTO.AssegnazioneRuoloUtenteDTO;
 import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.DTO.UtenteDTO;
-import BW5.epicEnergy.entity.RuoliUtente;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.service.ClientiService;
 import BW5.epicEnergy.service.UtenteService;
@@ -84,7 +83,7 @@ public class UtenteController {
     @PostMapping("/{utenteId}/autorizzazioni")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public RuoliUtente assegnaNuovoRuolo(@PathVariable UUID utenteId, @RequestBody @Validated AssegnazioneRuoloUtenteDTO body) {
+    public InvioEmailDTO assegnaNuovoRuolo(@PathVariable UUID utenteId, @RequestBody @Validated AssegnazioneRuoloUtenteDTO body) {
         return this.utenteService.assegnaRuoloAUtente(utenteId, body);
     }
 

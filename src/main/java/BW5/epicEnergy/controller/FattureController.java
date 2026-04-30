@@ -50,6 +50,7 @@ public class FattureController {
         return this.statoFatturaService.save(body);
     }
 
+
     @GetMapping
     @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Page<Fattura> ottieniFattureOrdinateEFiltrate(@RequestParam(required = false) UUID idCliente,
