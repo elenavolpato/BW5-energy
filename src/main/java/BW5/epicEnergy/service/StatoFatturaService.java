@@ -39,6 +39,10 @@ public class StatoFatturaService {
 
         String noState = "nessuno stato";
         StatoFattura statoDefault;
+
+        if (tipo.equals(noState)) {
+            throw new IllegalArgumentException("Non puoi cancellare lo stato di default");
+        }
         // se cancello uno stato che è in utilizzo in una fattura -> assegno uno stato di default.
         //1 cerco fatture associate allo stato che voglio cancellare
         StatoFattura toDelete = this.findByTipo(tipo);
@@ -58,7 +62,7 @@ public class StatoFatturaService {
         // cancello lo stato vecchio
         this.statoFatturaRepository.delete(toDelete);
     }
-    
+
 }
 
 
