@@ -1,10 +1,12 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.FatturaDTO;
+import BW5.epicEnergy.DTO.NuovoStatoFatturaDTO;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Fattura;
 import BW5.epicEnergy.entity.StatoFattura;
 import BW5.epicEnergy.exception.BadRequestException;
+import BW5.epicEnergy.exception.NotFoundException;
 import BW5.epicEnergy.repositories.FattureRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -33,6 +37,21 @@ public class FattureService {
         log.info("Fattura con id " + fatturaSalvata.getId() + " salvata con successo!");
         return fatturaSalvata.getId();
     }
+
+    public Fattura findById(UUID fatturaID) {
+        return this.fattureRepository.findById(fatturaID).orElseThrow(() -> new NotFoundException("fattura"));
+    }
+
+    public List<Fattura> findByStato(String stato) {
+        List<Fattura> res = new ArrayList<>();
+        try {
+            res = this.fattureRepository.findByStato(stato);
+        } catch (NotFoundException ex) {
+            throw new NotFoundException("lista di fatture");
+        }
+        return res;
+    }
+
 
     public Page<Fattura> findAll(Specification<Fattura> specification, int page, int size, String sortBy, String order) {
         if (page < 0) page = 0;
@@ -56,4 +75,22 @@ public class FattureService {
 
         return this.fattureRepository.findAll(specification, pageable);
     }
+
+    public void delete(UUID fatturaId) {
+        this.fattureRepository.delete(this.findById(fatturaId));
+    }
+
+
+    public Fattura findByIdAndUpdate(UUID fatturaId, NuovoStatoFatturaDTO body) {
+
+        Fattura found = this.findById(fatturaId);
+
+        found.setStato(body.stato());
+
+        Fattura updateFattura = this.fattureRepository.save(found);
+
+        return updateFattura;
+    }
+
+
 }

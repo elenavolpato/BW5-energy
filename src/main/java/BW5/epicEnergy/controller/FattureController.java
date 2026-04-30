@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,15 @@ public class FattureController {
         return this.statoFatturaService.save(body);
     }
 
+    @GetMapping("/{fatturaId}")
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
+    public Fattura getById(@PathVariable UUID fatturaId) {
+        return this.fattureService.findById(fatturaId);
+    }
+
+
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
     public Page<Fattura> ottieniFattureOrdinateEFiltrate(@RequestParam(required = false) UUID idCliente,
                                                          @RequestParam(required = false) String nomeCliente,
                                                          @RequestParam(required = false) String parteNomeCliente,
@@ -84,4 +93,13 @@ public class FattureController {
 
         return this.fattureService.findAll(specification, page, size, sortBy, order);
     }
+
+    @DeleteMapping("/{fatturaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public void getByIdAndDelete(@PathVariable UUID fatturaId) {
+        this.fattureService.delete(fatturaId);
+    }
+
+
 }
