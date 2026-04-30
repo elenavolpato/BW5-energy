@@ -57,4 +57,16 @@ public class EmailSender {
         System.out.println(response.getBody());
         return new InvioEmailDTO("Email inviata all'indirizzo " + body.emailDestinatario() + " inviata con successo!", LocalDateTime.now());
     }
+
+    public InvioEmailDTO sendRegistrationEmail(Utente recipient) {
+        HttpResponse<JsonNode> response = Unirest.post("https://api.mailgun.net/v3/" + this.domainName + "/messages")
+                .basicAuth("api", this.apiKey)
+                .queryString("from", "Epic Energy Services <epic.energy.services@administration.com>")
+                .queryString("to", recipient.getEmail()) // <-- DEVE ESSERE IL DESTINATARIO VERIFICATO!
+                .queryString("subject", "Registrazione utente")
+                .queryString("text", "Complimenti, " + recipient.getNome() + " " + recipient.getCognome() + "! La tua registrazione è avvenuta con successo!")
+                .asJson();
+        System.out.println(response.getBody());
+        return new InvioEmailDTO("Email inviata all'indirizzo " + recipient.getEmail() + " inviata con successo!", LocalDateTime.now());
+    }
 }

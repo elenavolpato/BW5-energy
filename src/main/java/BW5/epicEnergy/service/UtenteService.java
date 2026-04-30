@@ -80,9 +80,9 @@ public class UtenteService {
         Utente newU = this.utenteRepository.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()), body.nome(), body.cognome()));
 
         this.assegnaRuoloAUtente(newU.getId(), new AssegnazioneRuoloUtenteDTO("UTENTE"));
-        // qia assegno di default il ruolo di UTENTE
-        /*newU.addRuolo("utente");*/
 
+        this.emailSender.sendRegistrationEmail(newU);
+        
         return newU;
     }
 
