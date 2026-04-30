@@ -1,29 +1,20 @@
 package BW5.epicEnergy.DTO;
 
-
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-public record ClienteDTO(
-        @NotBlank(message = "La ragione sociale è obbligatoria")
-        @Size(min = 2, max = 255, message = "La ragione sociale deve contenere tra i 2 ed i 255 caratteri")
-        String ragioneSociale,
-
-        @NotBlank(message = "La partita IVA è obbligatoria")
-        @Pattern(regexp = "^\\d{11}$", message = "La partita IVA deve contenere 11 caratteri numerici")
-        String partitaIva,
-
+public record UpdateClienteDTO(
         @NotBlank(message = "L'email è obbligatoria")
-        @Email(message = "L'email deve rispettare un formato email valido")
+        @Email(message = "L'email deve rispettare un formato valido")
         String email,
 
         @NotNull(message = "Il fatturato annuale è obbligatorio")
         @PositiveOrZero(message = "Il fatturato annuale deve essere una numero positivo o uguale a zero")
         BigDecimal fatturatoAnnuale,
 
-        @NotBlank(message = "La PEC è obbligatoria")
-        @Email(message = "La PEC deve rispettare un formato email valido")
+        @NotBlank(message = "La pec è obbligatoria")
+        @Email(message = "La pec deve rispettare un formato valido")
         String pec,
 
         @NotBlank(message = "Il numero di telefono è obbligatorio")
@@ -44,13 +35,6 @@ public record ClienteDTO(
 
         @NotBlank(message = "Il numero di telefono del contatto è obbligatorio")
         @Pattern(regexp = "^\\d+$", message = "Il numero di telefono deve essere composto solo da caratteri numerici")
-        String telefonoContatto,
-
-        IndirizzoDTO sedeLegale,
-        IndirizzoDTO sedeOperativa,
-
-        @NotBlank(message = "Il tipo di cliente è obbligatorio")
-        @Pattern(regexp = "^(PA|SAS|SPA|SRL)$", message = "Tipo di cliente non valido")
-        String tipo
+        String telefonoContatto
 ) {
 }

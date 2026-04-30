@@ -1,8 +1,6 @@
 package BW5.epicEnergy.controller;
 
-import BW5.epicEnergy.DTO.ClienteDTO;
-import BW5.epicEnergy.DTO.EmailDTO;
-import BW5.epicEnergy.DTO.InvioEmailDTO;
+import BW5.epicEnergy.DTO.*;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.exception.PayloadValidationException;
 import BW5.epicEnergy.service.ClientiService;
@@ -50,12 +48,32 @@ public class ClientiController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public Cliente aggiornaCliente(@PathVariable UUID id, @RequestBody @Validated ClienteDTO body, BindingResult validationResult) {
+    public Cliente aggiornaCliente(@PathVariable UUID id, @RequestBody @Validated UpdateClienteDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
             throw new PayloadValidationException(errors);
         }
         return this.clientiService.update(id, body);
+    }
+
+    @PatchMapping("/{id}/sedeLegale")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public Cliente aggiornaSedeLegaleCliente(@PathVariable UUID id, @RequestBody @Validated IndirizzoDTO body, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
+            throw new PayloadValidationException(errors);
+        }
+        return this.clientiService.updateSedeLegale(id, body);
+    }
+
+    @PatchMapping("/{id}/sedeOperativa")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public Cliente aggiornaSedeOperativaCliente(@PathVariable UUID id, @RequestBody @Validated IndirizzoDTO body, BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            List<String> errors = validationResult.getAllErrors().stream().map(error -> error.getDefaultMessage()).toList();
+            throw new PayloadValidationException(errors);
+        }
+        return this.clientiService.updateSedeOperativa(id, body);
     }
 
     @DeleteMapping("/{id}")
@@ -66,7 +84,7 @@ public class ClientiController {
     }
 
     @PatchMapping("/{id}/logo")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public Cliente avatarUpload(@PathVariable UUID id,
                                 @RequestParam("logo") MultipartFile file) throws IOException {
         return this.clientiService.avatarUpload(id, file);

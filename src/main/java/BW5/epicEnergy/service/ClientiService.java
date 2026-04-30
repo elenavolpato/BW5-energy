@@ -1,8 +1,6 @@
 package BW5.epicEnergy.service;
 
-import BW5.epicEnergy.DTO.ClienteDTO;
-import BW5.epicEnergy.DTO.EmailDTO;
-import BW5.epicEnergy.DTO.InvioEmailDTO;
+import BW5.epicEnergy.DTO.*;
 import BW5.epicEnergy.entity.Cliente;
 import BW5.epicEnergy.entity.Indirizzo;
 import BW5.epicEnergy.enums.TipoCliente;
@@ -37,8 +35,7 @@ public class ClientiService {
     private final EmailSender emailSender;
 
     public UUID save(ClienteDTO body) {
-
-
+        
         if (this.clienteRepository.existsByPartitaIva(body.partitaIva()))
             throw new BadRequestException("Partita IVA già associata ad un altro cliente");
 
@@ -121,6 +118,8 @@ public class ClientiService {
 
     public InvioEmailDTO inviaEmailACliente(String clienteId, EmailDTO body) {
         Cliente cliente = this.findById(clienteId);
+        cliente.setDataUltimoContatto(LocalDate.now());
+        this.clienteRepository.save(cliente);
         return this.emailSender.sendEmailToCustomer(cliente, body);
     }
 
@@ -129,10 +128,8 @@ public class ClientiService {
         return this.emailSender.sendEmailToCustomerReferent(cliente, body);
     }
 
-    public Cliente update(UUID id, ClienteDTO body) {
+    public Cliente update(UUID id, UpdateClienteDTO body) {
         Cliente cliente = this.findById(id);
-        cliente.setRagioneSociale(body.ragioneSociale());
-        cliente.setPartitaIva(body.partitaIva());
         cliente.setEmail(body.email());
         cliente.setFatturatoAnnuale(body.fatturatoAnnuale());
         cliente.setPec(body.pec());
@@ -142,14 +139,50 @@ public class ClientiService {
         cliente.setCognomeContatto(body.cognomeContatto());
         cliente.setTelefonoContatto(body.telefonoContatto());
         cliente.setDataUltimoContatto(LocalDate.now());
-        cliente.setTipo(TipoCliente.valueOf(body.tipo()));
         return this.clienteRepository.save(cliente);
     }
 
-    /*public void delete(UUID id) {
+    public Cliente updateSedeLegale(UUID id, IndirizzoDTO body) {
         Cliente cliente = this.findById(id);
-        clienteRepository.deleteById(id);
-    }*/
+        if (
+                !cliente.getSedeOperativa().getVia().equals(body.via())
+                        && !cliente.getSedeOperativa().getCivico().equals(body.civico())
+                        && !cliente.getSedeOperativa().getCap().equals(body.cap())
+                        && !cliente.getSedeOperativa().getLocalita().equals(body.localita())
+                        && !cliente.getSedeOperativa().getComune().getId().equals(body.comune())
+        ) {
+            Indirizzo nuovaSedeLegale = indirizzoService.save(body);
+            if (this.clienteRepository.existsBySedeLegaleOrSedeOperativa(nuovaSedeLegale, nuovaSedeLegale))
+                throw new BadRequestException("Sede legale già associata ad un altro cliente");
+            cliente.setSedeLegale(nuovaSedeLegale);
+            cliente.setDataUltimoContatto(LocalDate.now());
+        } else {
+            cliente.setSedeLegale(cliente.getSedeOperativa());
+            cliente.setDataUltimoContatto(LocalDate.now());
+        }
+        return this.clienteRepository.save(cliente);
+    }
+
+    public Cliente updateSedeOperativa(UUID id, IndirizzoDTO body) {
+        Cliente cliente = this.findById(id);
+        if (
+                !cliente.getSedeLegale().getVia().equals(body.via())
+                        && !cliente.getSedeLegale().getCivico().equals(body.civico())
+                        && !cliente.getSedeLegale().getCap().equals(body.cap())
+                        && !cliente.getSedeLegale().getLocalita().equals(body.localita())
+                        && !cliente.getSedeLegale().getComune().getId().equals(body.comune())
+        ) {
+            Indirizzo nuovaSedeOperativa = indirizzoService.save(body);
+            if (this.clienteRepository.existsBySedeLegaleOrSedeOperativa(nuovaSedeOperativa, nuovaSedeOperativa))
+                throw new BadRequestException("Sede operativa già associata ad un altro cliente");
+            cliente.setSedeOperativa(nuovaSedeOperativa);
+            cliente.setDataUltimoContatto(LocalDate.now());
+        } else {
+            cliente.setSedeOperativa(cliente.getSedeLegale());
+            cliente.setDataUltimoContatto(LocalDate.now());
+        }
+        return this.clienteRepository.save(cliente);
+    }
 
     public Cliente avatarUpload(UUID id, MultipartFile file) {
         Cliente cliente = this.findById(id);
@@ -162,16 +195,9 @@ public class ClientiService {
         }
         String url = (String) uploadResult.get("secure_url");
         cliente.setLogoAziendale(url);
+        cliente.setDataUltimoContatto(LocalDate.now());
         return this.clienteRepository.save(cliente);
     }
-
-   /* public void deleteCliente(UUID id) {
-        System.out.println("-------------- " + id);
-        if (!clienteRepository.existsById(id)) {
-            throw new EntityNotFoundException("Impossibile eliminare: cliente non trovato con id: " + id);
-        }
-        clienteRepository.deleteById(id);
-    }*/
 
     public void deleteCliente(UUID id) {
         Cliente found = this.findById(id);
