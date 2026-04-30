@@ -1,9 +1,6 @@
 package BW5.epicEnergy.service;
 
-import BW5.epicEnergy.DTO.AssegnazioneRuoloUtenteDTO;
-import BW5.epicEnergy.DTO.EmailDTO;
-import BW5.epicEnergy.DTO.InvioEmailDTO;
-import BW5.epicEnergy.DTO.UtenteDTO;
+import BW5.epicEnergy.DTO.*;
 import BW5.epicEnergy.entity.Ruoli;
 import BW5.epicEnergy.entity.RuoliUtente;
 import BW5.epicEnergy.entity.Utente;
@@ -104,7 +101,7 @@ public class UtenteService {
         return this.utenteRepository.findAll(pageable);
     }
 
-    public Utente update(UUID utenteId, UtenteDTO body) {
+    public Utente update(UUID utenteId, UpdateUtenteDTO body) {
         Utente toUpdate = this.findById(utenteId);
 
         if (!toUpdate.getEmail().equals(body.email())) {
@@ -118,7 +115,6 @@ public class UtenteService {
 
         toUpdate.setUsername(body.username());
         toUpdate.setEmail(body.email());
-        toUpdate.setPassword(bcrypt.encode(body.password()));
         toUpdate.setNome(body.nome());
         toUpdate.setCognome(body.cognome());
 

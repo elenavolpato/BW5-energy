@@ -1,5 +1,6 @@
 package BW5.epicEnergy.controller;
 
+import BW5.epicEnergy.DTO.InvioEmailDTO;
 import BW5.epicEnergy.DTO.RuoliDTO;
 import BW5.epicEnergy.entity.Ruoli;
 import BW5.epicEnergy.exception.ValidationExceptions;
@@ -11,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,6 +20,7 @@ import java.util.List;
 public class RuoliController {
 
     private final RuoliService ruoliService;
+
     public RuoliController(RuoliService ruoliService) {
         this.ruoliService = ruoliService;
     }
@@ -26,13 +29,13 @@ public class RuoliController {
     @PostMapping("/creaNuovo")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public String creaRuolo(@RequestBody @Validated RuoliDTO body, BindingResult validationResult) {
+    public InvioEmailDTO creaRuolo(@RequestBody @Validated RuoliDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getFieldErrors().stream().map(e -> e.getDefaultMessage()).toList();
             throw new ValidationExceptions(errors);
         }
 
-        return "La creazione del nuovo ruolo: " + this.ruoliService.create(body).getRuolo() + " è avvenuta con successo";
+        return new InvioEmailDTO("La creazione del nuovo ruolo: " + this.ruoliService.create(body).getRuolo() + " è avvenuta con successo", LocalDateTime.now());
     }
 
     @GetMapping

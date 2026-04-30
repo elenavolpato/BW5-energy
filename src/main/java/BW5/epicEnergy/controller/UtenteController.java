@@ -3,7 +3,7 @@ package BW5.epicEnergy.controller;
 import BW5.epicEnergy.DTO.AssegnazioneRuoloUtenteDTO;
 import BW5.epicEnergy.DTO.EmailDTO;
 import BW5.epicEnergy.DTO.InvioEmailDTO;
-import BW5.epicEnergy.DTO.UtenteDTO;
+import BW5.epicEnergy.DTO.UpdateUtenteDTO;
 import BW5.epicEnergy.entity.Utente;
 import BW5.epicEnergy.service.ClientiService;
 import BW5.epicEnergy.service.UtenteService;
@@ -43,7 +43,7 @@ public class UtenteController {
 
     @PutMapping("/me")
     @PreAuthorize("hasAnyAuthority('UTENTE', 'ADMIN')")
-    public Utente updateOwnProfile(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody UtenteDTO body) {
+    public Utente updateOwnProfile(@AuthenticationPrincipal Utente currentAuthenticatedUser, @RequestBody UpdateUtenteDTO body) {
         return this.utenteService.update(currentAuthenticatedUser.getId(), body);
     }
 
@@ -62,7 +62,7 @@ public class UtenteController {
 
     @PutMapping("/{utenteId}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public Utente getByIdAndUpdate(@PathVariable UUID utenteId, @RequestBody UtenteDTO body) {
+    public Utente getByIdAndUpdate(@PathVariable UUID utenteId, @RequestBody UpdateUtenteDTO body) {
         return this.utenteService.update(utenteId, body);
     }
 
