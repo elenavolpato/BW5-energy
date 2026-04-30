@@ -1,17 +1,14 @@
 package BW5.epicEnergy.service;
 
 import BW5.epicEnergy.DTO.StatoFatturaDTO;
-import BW5.epicEnergy.entity.Fattura;
 import BW5.epicEnergy.entity.StatoFattura;
 import BW5.epicEnergy.exception.BadRequestException;
 import BW5.epicEnergy.exception.NotFoundException;
-import BW5.epicEnergy.repositories.FattureRepository;
 import BW5.epicEnergy.repositories.StatoFatturaRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -19,8 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StatoFatturaService {
     private final StatoFatturaRepository statoFatturaRepository;
-    private final FattureService fattureService;
-    private final FattureRepository fattureRepository;
+   /* private final FattureService fattureService;
+    private final FattureRepository fattureRepository;*/
 
     public UUID save(StatoFatturaDTO body) {
         if (statoFatturaRepository.existsByTipo(body.tipo().toUpperCase().trim()))
@@ -35,14 +32,14 @@ public class StatoFatturaService {
         return this.statoFatturaRepository.findByTipo(tipo.toUpperCase().trim()).orElseThrow(() -> new NotFoundException("invoice status"));
     }
 
-    public StatoFattura finbByTipoAndUpdate(String tipo, StatoFatturaDTO body) {
+    /*public StatoFattura finbByTipoAndUpdate(String tipo, StatoFatturaDTO body) {
         StatoFattura toUpdate = this.findByTipo(tipo);
         toUpdate.setTipo(body.tipo());
         StatoFattura updated = this.statoFatturaRepository.save(toUpdate);
         return updated;
-    }
+    }*/
 
-    public void delete(String tipo) {
+   /* public void delete(String tipo) {
 
         String noState = "nessuno stato";
         StatoFattura statoDefault;
@@ -68,7 +65,7 @@ public class StatoFatturaService {
         this.fattureRepository.saveAll(fattureConStato);
         // cancello lo stato vecchio
         this.statoFatturaRepository.delete(toDelete);
-    }
+    }*/
 
 }
 
